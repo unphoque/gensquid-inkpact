@@ -49,11 +49,12 @@ const showCard=async function(interaction){
             let cardid=card[0].ID
             let cardcollec=card[0].COLLECTION
             let cardname=card[0].NAME
+            let cardnumber = card[0].NUMBER
             let sql="SELECT * FROM CARDS, INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardid+" AND ID="+cardid;
             await db.select(sql,(res)=>{
                 if(res.length==1){
                     let level=res[0].CARDLEVEL
-                    let file=toFileString("./img/"+cardcollec+"_"+cardid+"_level"+level+".png")
+                    let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level"+level+".png")
                     let name=toFileString(cardname+".png")
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
@@ -66,7 +67,7 @@ const showCard=async function(interaction){
                     interaction.editReply({embeds:[embed],files:[attachement]})
                 }
                 else{
-                    let file=toFileString("./img/"+cardcollec+"_"+cardid+"_level1.png")
+                    let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level1.png")
                     let name=toFileString(cardname+".png")
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
@@ -110,12 +111,13 @@ const addCardToInventory = async function(user,cardinfo,interaction){
     let cardname=cardinfo.NAME
     let cardcollec=cardinfo.COLLECTION
     let cardid=cardinfo.ID
+    let cardnumber=cardinfo.NUMBER
     await db.select(sql,async (res)=>{
         if (res.length==0){
             let sql="INSERT INTO INVENTORY (PLAYERID, CARDID) VALUES ('"+user.id+"','"+cardinfo.ID+"')"
             await db.insert(sql,()=>{})
 
-            let file=toFileString("./img/"+cardcollec+"_"+cardid+"_level1.png")
+            let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level1.png")
             let name=toFileString(cardname+".png")
             let attachement = new MessageAttachment(file,name)
             let embed=new MessageEmbed()
@@ -136,7 +138,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let sql="UPDATE INVENTORY SET CARDLEVEL="+newlv+", NBPOSSESSED=0 WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
                 await db.update(sql,()=>{})
 
-                let file=toFileString("./img/"+cardcollec+"_"+cardid+"_level"+newlv+".png")
+                let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level"+newlv+".png")
                 let name=toFileString(cardname+".png")
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
@@ -150,7 +152,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let sql="UPDATE INVENTORY SET NBPOSSESSED="+(res[0].NBPOSSESSED+1)+" WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
                 await db.update(sql,()=>{})
 
-                let file=toFileString("./img/"+cardcollec+"_"+cardid+"_level"+res[0].CARDLEVEL+".png")
+                let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")
                 let name=toFileString(cardname+".png")
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
