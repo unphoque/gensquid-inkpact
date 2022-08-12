@@ -2,7 +2,7 @@ const { Sequelize,QueryTypes } = require('sequelize');
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: './gensquid_impact.db',
+    storage: __dirname+'/gensquid_impact.db',
     pool: {
         max: 5,
         min: 0,
