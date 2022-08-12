@@ -59,7 +59,7 @@ const showCard=async function(interaction){
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription("__**"+res[0].COLLECNAME+"**__ - n°"+cardnumber+"/"+res[0].MAX+
+                        .setDescription("__**"+res[0].COLLECNAME+"**__ - n° "+cardnumber+"/"+res[0].MAX+
                             "\n**"+card[0].RARITY+"**"+
                             (card[0].RARITY!="✰"?"\nNiveau "+level:""))
                         .setImage("attachment://"+name)
@@ -76,7 +76,7 @@ const showCard=async function(interaction){
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription("__**"+collection.NAME+"**__ - n°"+cardnumber+"/"+collection.MAX+
+                        .setDescription("__**"+collection.NAME+"**__ - n° "+cardnumber+"/"+collection.MAX+
                             "\n**"+card[0].RARITY+"**"+
                             "\nNon possédée")
                         .setImage("attachment://"+name)
@@ -127,7 +127,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             let attachement = new MessageAttachment(file,name)
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
-                .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n°"+cardnumber+"/"+cardinfo.MAX+
+                .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                     "\n**"+cardinfo.RARITY+"**"+
                     (cardinfo.RARITY!="✰"?"\nNiveau 1":""))
                 .setImage("attachment://"+name)
@@ -149,7 +149,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n°"+cardnumber+"/"+cardinfo.MAX+
+                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+newlv:""))
                     .setImage("attachment://"+name)
@@ -164,7 +164,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n°"+cardnumber+"/"+cardinfo.MAX+
+                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
                     .setImage("attachment://"+name)
