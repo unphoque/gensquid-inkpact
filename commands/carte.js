@@ -60,7 +60,7 @@ const showCard=async function(interaction){
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
                         .setDescription("**"+card[0].RARITY+"**"+
-                            (card[0].RARITY=="✰"?"\nNiveau "+level:""))
+                            (card[0].RARITY!="✰"?"\nNiveau "+level:""))
                         .setImage("attachment://"+name)
                         //.setImage("http://127.0.0.1/")
 
