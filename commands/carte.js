@@ -180,7 +180,7 @@ const giveCard=async function(interaction){
 
     let user=interaction.options.getUser("joueur")
     let cardname=interaction.options.getString("carte")
-    let sql="SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co, CARDS ca WHERE UPPER(NAME)LIKE UPPER('"+cardname+"') AND ca.COLLECTION=co.SHORT"
+    let sql="SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co, CARDS ca WHERE UPPER(ca.NAME)LIKE UPPER('"+cardname+"') AND ca.COLLECTION=co.SHORT"
     await db.select(sql,async (res)=>{
         if (res.length==1){
             let cardinfo=res[0]
