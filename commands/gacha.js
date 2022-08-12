@@ -21,7 +21,7 @@ module.exports.data=data;
 const db=require("../db")
 const rarity=require("../rarity.json")
 const {MessageEmbed, MessageAttachment} = require("discord.js");
-const {toFileString} = require("./util");
+const {toFileString} = require(__dirname+"util");
 
 const showProbas = async function(interaction){
     let txt="";
@@ -159,7 +159,7 @@ const addCardToInventory = async function(user,cardinfo){
             let sql="INSERT INTO INVENTORY (PLAYERID, CARDID) VALUES ('"+user.id+"','"+cardinfo.ID+"')"
             await db.insert(sql,()=>{})
 
-            let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level1.png")
+            let file=toFileString(__dirname+"img/"+cardcollec+"_"+cardnumber+"_level1.png")
             let name=toFileString(cardname+".png")
             let attachement = new MessageAttachment(file,name)
             let embed=new MessageEmbed()
@@ -175,7 +175,7 @@ const addCardToInventory = async function(user,cardinfo){
                 let sql="UPDATE PLAYERS SET SEASNAILS=(SELECT SEASNAILS+"+rarityinfo.compensation+" FROM PLAYERS WHERE ID='"+user.id+"') WHERE ID='"+user.id+"'";
                 await db.update(sql,()=>{})
                 let cardname=cardinfo.NAME
-                let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")
+                let file=toFileString(__dirname+"img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")
                 let name=toFileString(cardname+".png")
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
@@ -192,7 +192,7 @@ const addCardToInventory = async function(user,cardinfo){
                 await db.update(sql,()=>{})
 
                 let cardname=cardinfo.NAME
-                let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level"+newlv+".png")
+                let file=toFileString(__dirname+"img/"+cardcollec+"_"+cardnumber+"_level"+newlv+".png")
                 let name=toFileString(cardname+".png")
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
@@ -208,7 +208,7 @@ const addCardToInventory = async function(user,cardinfo){
                 await db.update(sql,()=>{})
 
                 let cardname=cardinfo.NAME
-                let file=toFileString("./img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")
+                let file=toFileString(__dirname+"img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")
                 let name=toFileString(cardname+".png")
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
