@@ -128,7 +128,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
                 .setDescription("**"+cardinfo.RARITY+"**"+
-                    (card[0].RARITY!="✰"?"\nNiveau 1":""))
+                    (res[0].RARITY!="✰"?"\nNiveau 1":""))
                 .setImage("attachment://"+name)
 
             await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a reçu "+cardinfo.NAME+" !"})
@@ -149,7 +149,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription("**"+cardinfo.RARITY+"**"+
-                        (card[0].RARITY!="✰"?"\nNiveau "+newlv:""))
+                        (res[0].RARITY!="✰"?"\nNiveau "+newlv:""))
                     .setImage("attachment://"+name)
 
                 await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a reçu "+cardinfo.NAME+" ! Elle passe au niveau "+newlv+" !"})
@@ -163,7 +163,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription("**"+cardinfo.RARITY+"**"+
-                        (card[0].RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
+                        (res[0].RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
                     .setImage("attachment://"+name)
 
                 await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a reçu "+cardinfo.NAME+" !"})
