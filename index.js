@@ -109,7 +109,7 @@ client.on('interactionCreate', async interaction => {
                 await carte.showAllCards(interaction)
                 break
             case "give":
-                await interaction.deferReply({ephemeral:true});
+                await interaction.deferReply();
                 await carte.giveCard(interaction)
                 break
         }
