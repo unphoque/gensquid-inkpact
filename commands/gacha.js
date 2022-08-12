@@ -10,11 +10,11 @@ const data = new SlashCommandBuilder()
     .addSubcommand(subcommand =>
         subcommand
             .setName('x1')
-            .setDescription('Tirez une carte au hasard !'))
+            .setDescription('Tirez une carte au hasard ! (20 coquillages)'))
     .addSubcommand(subcommand =>
         subcommand
             .setName('x10')
-            .setDescription('Tirez 10 cartes d\'un coup !'))
+            .setDescription('Tirez 10 cartes d\'un coup ! (200 coquillages)'))
 
 module.exports.data=data;
 
