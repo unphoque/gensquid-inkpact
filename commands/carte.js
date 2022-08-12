@@ -112,7 +112,7 @@ const showAllCards=async function(interaction){
 module.exports.showAllCards=showAllCards
 
 const addCardToInventory = async function(user,cardinfo,interaction){
-    let sql="SELECT * FROM INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
+    let sql="SELECT * FROM INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardinfo.ID
     let cardname=cardinfo.NAME
     let cardcollec=cardinfo.COLLECTION
     let cardid=cardinfo.ID
@@ -128,7 +128,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
                 .setDescription("**"+cardinfo.RARITY+"**"+
-                    (res[0].RARITY!="✰"?"\nNiveau 1":""))
+                    (cardinfo.RARITY!="✰"?"\nNiveau 1":""))
                 .setImage("attachment://"+name)
 
             await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a reçu "+cardinfo.NAME+" !"})
@@ -149,7 +149,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription("**"+cardinfo.RARITY+"**"+
-                        (res[0].RARITY!="✰"?"\nNiveau "+newlv:""))
+                        (cardinfo.RARITY!="✰"?"\nNiveau "+newlv:""))
                     .setImage("attachment://"+name)
 
                 await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a reçu "+cardinfo.NAME+" ! Elle passe au niveau "+newlv+" !"})
@@ -163,7 +163,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription("**"+cardinfo.RARITY+"**"+
-                        (res[0].RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
+                        (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
                     .setImage("attachment://"+name)
 
                 await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a reçu "+cardinfo.NAME+" !"})
