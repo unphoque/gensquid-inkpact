@@ -8,10 +8,6 @@ const fs = require('fs')
 const commands = [];
 const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
 
-// Place your client and guild ids here
-const clientId = '123456789012345678';
-const guildId = '876543210987654321';
-
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     if(command.data) commands.push(command.data.toJSON());
@@ -63,7 +59,7 @@ const echange=require("./commands/echange")
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    client.user.setPresence({status:"invisible"})
+    if (CONFIG.IS_INVISIBLE) client.user.setPresence({status:"invisible"})
 });
 
 client.on('interactionCreate', async interaction => {
