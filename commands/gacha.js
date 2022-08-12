@@ -165,7 +165,7 @@ const addCardToInventory = async function(user,cardinfo){
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
                 .setDescription("**NOUVELLE CARTE !**"+
-                    "\n__**"+cardinfo.COLLECNAME+"**__ - "+cardnumber+"/"+cardinfo.MAX+
+                    "\n__**"+cardinfo.COLLECNAME+"**__ - n°"+cardnumber+"/"+cardinfo.MAX+
                     "\n**"+cardinfo.RARITY+"**"+
                     "\nNiveau 1 0/"+rarityinfo.tonextlv)
                 .setImage("attachment://"+name)
@@ -181,7 +181,7 @@ const addCardToInventory = async function(user,cardinfo){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - "+cardnumber+"/"+cardinfo.MAX+
+                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n°"+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         "\nNiveau "+res[0].CARDLEVEL+" (max)"+
                         "\n*Compensation : "+rarityinfo.compensation+" coquillage"+(rarityinfo.compensation==1?"*":"s*"))
@@ -200,7 +200,7 @@ const addCardToInventory = async function(user,cardinfo){
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription("**NIVEAU SUP !**"+
-                        "\n__**"+cardinfo.COLLECNAME+"**__ - "+ cardnumber+"/"+cardinfo.MAX+
+                        "\n__**"+cardinfo.COLLECNAME+"**__ - n°"+ cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         "\nNiveau "+newlv+(newlv==rarityinfo.maxlv?" (max)":" 0/"+rarityinfo.tonextlv))
                     .setImage("attachment://"+name)
@@ -216,7 +216,7 @@ const addCardToInventory = async function(user,cardinfo){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("\n__**"+cardinfo.COLLECNAME+"**__ - "+cardnumber+"/"+cardinfo.MAX+
+                    .setDescription("\n__**"+cardinfo.COLLECNAME+"**__ - n°"+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         "\nNiveau "+res[0].CARDLEVEL+" "+(res[0].NBPOSSESSED+1)+"/"+rarityinfo.tonextlv)
                     .setImage("attachment://"+name)
