@@ -127,7 +127,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             let attachement = new MessageAttachment(file,name)
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
-                .setDescription("**"+cardinfo.RARITY+"**"+
+                .setDescription("__**"+cardinfo.COLLECNAME+"**__ - "+cardnumber+"/"+cardinfo.MAX+
+                    "\n**"+cardinfo.RARITY+"**"+
                     (cardinfo.RARITY!="✰"?"\nNiveau 1":""))
                 .setImage("attachment://"+name)
 
@@ -148,7 +149,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("**"+cardinfo.RARITY+"**"+
+                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - "+cardnumber+"/"+cardinfo.MAX+
+                        "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+newlv:""))
                     .setImage("attachment://"+name)
 
@@ -162,7 +164,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("**"+cardinfo.RARITY+"**"+
+                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - "+cardnumber+"/"+cardinfo.MAX+
+                        "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
                     .setImage("attachment://"+name)
 
@@ -177,7 +180,7 @@ const giveCard=async function(interaction){
 
     let user=interaction.options.getUser("joueur")
     let cardname=interaction.options.getString("carte")
-    let sql="SELECT * FROM CARDS WHERE UPPER(NAME)LIKE UPPER('"+cardname+"')"
+    let sql="SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co, CARDS ca WHERE UPPER(NAME)LIKE UPPER('"+cardname+"') AND ca.COLLECTION=co.SHORT"
     await db.select(sql,async (res)=>{
         if (res.length==1){
             let cardinfo=res[0]
