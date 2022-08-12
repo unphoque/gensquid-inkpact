@@ -21,7 +21,7 @@ module.exports.data=data;
 const db=require("../db")
 const rarity=require("../rarity.json")
 const {MessageEmbed, MessageAttachment} = require("discord.js");
-const {toFileString} = require(__dirname+"util");
+const {toFileString} = require("./util");
 
 const showProbas = async function(interaction){
     let txt="";

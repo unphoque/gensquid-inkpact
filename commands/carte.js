@@ -34,8 +34,8 @@ module.exports.data=data;
 
 const { MessageEmbed, MessageAttachment} = require('discord.js');
 const db=require("../db.js")
-const {toFileString} = require(__dirname+"util")
-const permissions = require(__dirname+"permissions");
+const {toFileString} = require("./util")
+const permissions = require("./permissions");
 const rarity=require("../rarity.json")
 
 const showCard=async function(interaction){
