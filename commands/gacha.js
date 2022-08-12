@@ -63,7 +63,7 @@ const playGacha = async function (interaction) {
             i.probaup = {}
             i.cards = []
         }
-        db.select("SELECT * FROM CARDS",(cardsDB)=>{
+        db.select("SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co,CARDS ca where ca.COLLECTION=co.SHORT",(cardsDB)=>{
             let cards={}
             for (const c of cardsDB) {
                 if(c.PROBAUP){
@@ -165,6 +165,7 @@ const addCardToInventory = async function(user,cardinfo){
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
                 .setDescription("**NOUVELLE CARTE !**"+
+                    "\n__**"+cardinfo.COLLECNAME+"**__ - "+cardid+"/"+cardinfo.MAX+
                     "\n**"+cardinfo.RARITY+"**"+
                     "\nNiveau 1 0/"+rarityinfo.tonextlv)
                 .setImage("attachment://"+name)
@@ -180,7 +181,8 @@ const addCardToInventory = async function(user,cardinfo){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("**"+cardinfo.RARITY+"**"+
+                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - "+cardid+"/"+cardinfo.MAX+
+                        "\n**"+cardinfo.RARITY+"**"+
                         "\nNiveau "+res[0].CARDLEVEL+" (max)"+
                         "\n*Compensation : "+rarityinfo.compensation+" coquillage"+(rarityinfo.compensation==1?"*":"s*"))
                     .setImage("attachment://"+name)
@@ -198,6 +200,7 @@ const addCardToInventory = async function(user,cardinfo){
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription("**NIVEAU SUP !**"+
+                        "\n__**"+cardinfo.COLLECNAME+"**__ - "+cardid+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         "\nNiveau "+newlv+" 0/"+rarityinfo.tonextlv)
                     .setImage("attachment://"+name)
@@ -213,7 +216,8 @@ const addCardToInventory = async function(user,cardinfo){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("**"+cardinfo.RARITY+"**"+
+                    .setDescription("\n__**"+cardinfo.COLLECNAME+"**__ - "+cardid+"/"+cardinfo.MAX+
+                        "\n**"+cardinfo.RARITY+"**"+
                         "\nNiveau "+res[0].CARDLEVEL+" "+(res[0].NBPOSSESSED+1)+"/"+rarityinfo.tonextlv)
                     .setImage("attachment://"+name)
 

@@ -50,8 +50,8 @@ const showCard=async function(interaction){
             let cardcollec=card[0].COLLECTION
             let cardname=card[0].NAME
             let cardnumber = card[0].NUMBER
-            let sql="SELECT * FROM CARDS, INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardid+" AND ID="+cardid;
-            await db.select(sql,(res)=>{
+            let sql="SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co, CARDS, INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardid+" AND ID="+cardid+" AND SHORT=COLLECTION";
+            await db.select(sql,async (res)=>{
                 if(res.length==1){
                     let level=res[0].CARDLEVEL
                     let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level"+level+".png")
@@ -59,7 +59,8 @@ const showCard=async function(interaction){
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription("**"+card[0].RARITY+"**"+
+                        .setDescription("__**"+res[0].COLLECNAME+"**__ - "+cardid+"/"+res[0].MAX+
+                            "\n**"+card[0].RARITY+"**"+
                             (card[0].RARITY!="✰"?"\nNiveau "+level:""))
                         .setImage("attachment://"+name)
                         //.setImage("http://127.0.0.1/")
@@ -67,12 +68,16 @@ const showCard=async function(interaction){
                     interaction.editReply({embeds:[embed],files:[attachement]})
                 }
                 else{
+                    let collection = await db.select("SELECT co.* FROM COLLECTIONS co, CARDS ca WHERE ca.COLLECTION=co.SHORT AND ca.ID="+cardid,(res)=> {
+                        return res[0]
+                    });
                     let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level1.png")
                     let name=toFileString(cardname+".png")
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription("**"+card[0].RARITY+"**"+
+                        .setDescription("__**"+collection.NAME+"**__ - "+cardid+"/"+collection.MAX+
+                            "\n**"+card[0].RARITY+"**"+
                             "\nNon possédée")
                         .setImage("attachment://"+name)
 
