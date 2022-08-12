@@ -2,15 +2,15 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const data = new SlashCommandBuilder()
     .setName('joueur')
-    .setDescription('Commandes liées à votre comptes')
+    .setDescription('Commandes liées à votre compte')
     .addSubcommand(subcommand =>
         subcommand
             .setName('créer')
-            .setDescription('Créé ton compte Gensquid Inkpact !'))
+            .setDescription('Créé ton compte Squid Order TCG !'))
     .addSubcommand(subcommand =>
         subcommand
         .setName('suppr')
-        .setDescription('Supprime ton compte Gensquid Inkpact. Attention, cela est définitif !'))
+        .setDescription('Supprime ton compte Squid Order TCG. Attention, cela est définitif !'))
     .addSubcommand(subcommand =>
         subcommand
             .setName('ban')
