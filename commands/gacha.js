@@ -76,10 +76,10 @@ const playGacha = async function (interaction) {
             let allCards=[]
             for (let i = 0; i < nbDraw; i++) {
                 let rarityDraw;
-                if(player.PITYX>=100){
+                if(player.PITYX>=99){
                     rarityDraw="X";
                     player.PITYX=-1;
-                }else if(player.PITYS>=10){
+                }else if(player.PITYS>=9){
                     rarityDraw="S"
                     player.PITYS=-1;
                 }else{
