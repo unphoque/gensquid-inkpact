@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { ActionRowBuilder, SelectMenuBuilder } = require("discord.js")
+const {MessageActionRow, MessageSelectMenu} = require("discord.js")
 
 const data = new SlashCommandBuilder()
     .setName('carte')
@@ -96,10 +96,10 @@ const showCard=async function(interaction){
                 options.push(obj)
             }
 
-            const row = new ActionRowBuilder()
+            const row = new MessageActionRow()
                 .addComponents(
-                    new SelectMenuBuilder()
-                        .setCustomId('select_'+user.id)
+                    new MessageSelectMenu()
+                        .setCustomId('voir_'+user.id)
                         .setPlaceholder('Sélectionnez une carte')
                         .addOptions(options)
                 );
