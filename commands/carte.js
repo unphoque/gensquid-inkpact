@@ -1,4 +1,5 @@
-const { SlashCommandBuilder,ActionRowBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { ActionRowBuilder, SelectMenuBuilder } = require("discord.js")
 
 const data = new SlashCommandBuilder()
     .setName('carte')
