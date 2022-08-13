@@ -59,7 +59,10 @@ const echange=require("./commands/echange")
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    if (CONFIG.IS_INVISIBLE) client.user.setPresence({status:"invisible"})
+    if (CONFIG.IS_INVISIBLE) {
+        client.user.setPresence({status: "invisible"})
+        client.user.setActivity(CONFIG.STATUS,{type:ActivityType.Custom})
+    }
 });
 
 client.on('interactionCreate', async interaction => {
