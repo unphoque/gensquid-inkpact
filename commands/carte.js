@@ -41,11 +41,11 @@ const rarity=require("../rarity.json")
 const showCard=async function(interaction){
     let user = interaction.user
     let cardname=interaction.options.getString("carte")
-    let sql="SELECT * FROM CARDS WHERE UPPER(NAME) LIKE UPPER('"+cardname+"')"
+    let sql="SELECT * FROM CARDS WHERE UPPER(NAME) LIKE UPPER('%"+cardname+"%')"
     await db.select(sql,async (card)=>{
         if (card.length==0){
-            await interaction.editReply("La carte demandée n'existe pas.")
-        }else{
+            await interaction.editReply("Aucune carte trouvée.")
+        }else if (card.length==1){
             let cardid=card[0].ID
             let cardcollec=card[0].COLLECTION
             let cardname=card[0].NAME
@@ -84,11 +84,40 @@ const showCard=async function(interaction){
                     interaction.editReply({embeds:[embed],files:[attachement]})
                 }
             });
+        }else{
+            let options=[]
+            for (const c in card){
+                let obj={}
+                obj.label=c.NAME
+                obj.description=c.NAME+" - "+c.RARITY
+                obj.value=toFileString(c.NAME)
+                options.push(obj)
+            }
+
+            const row = new ActionRowBuilder()
+                .addComponents(
+                    new SelectMenuBuilder()
+                        .setCustomId('select_'+user.id)
+                        .setPlaceholder('Sélectionnez une carte')
+                        .addOptions(options)
+                );
+
+            await interaction.editReply({components:[row]})
         }
     });
 };
 
 module.exports.showCard=showCard
+
+const showCardSelectMenu = function (interaction){
+    let user = interaction.user
+    let cardname=interaction.options.getString("carte")
+    console.log(interaction)
+    let sql="SELECT * FROM CARDS"
+    interaction.editReply("")
+}
+
+module.exports.showCardSelectMenu=showCardSelectMenu
 
 const showAllCards=async function(interaction){
     let user = interaction.user

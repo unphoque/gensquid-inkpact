@@ -145,6 +145,7 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+//BUTTONS
 client.on("interactionCreate",async interaction=>{
     if (!interaction.isButton()) return;
 
@@ -152,6 +153,16 @@ client.on("interactionCreate",async interaction=>{
         await interaction.deferReply();
         await echange.executeExchange(interaction);
     }
-})
+});
+
+//SELECT MENUS
+client.on("interactionCreate", async interaction=>{
+   if (!interaction.isSelectMenu()) return;
+
+   if (interaction.customId.includes("voir_")){
+       await interaction.deferReply({ephemeral:true});
+       await carte.showCardSelectMenu(interaction);
+   }
+});
 
 client.login(CONFIG.DISCORD_TOKEN);
