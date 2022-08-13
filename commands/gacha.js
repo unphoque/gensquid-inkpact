@@ -167,7 +167,7 @@ const addCardToInventory = async function(user,cardinfo){
                 .setDescription("**NOUVELLE CARTE !**"+
                     "\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                     "\n**"+cardinfo.RARITY+"**"+
-                    "\nNiveau 1 0/"+rarityinfo.tonextlv)
+                    "\nNiveau 1 "+(cardinfo.RARITY=="C"?"(max)":"0/"+rarityinfo.tonextlv))
                 .setImage("attachment://"+name)
 
             return [embed,attachement]
