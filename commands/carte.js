@@ -85,6 +85,7 @@ const showCard=async function(interaction){
                 }
             });
         }else{
+            console.log(card)
             let options=[]
             for (const c in card){
                 let obj={}
