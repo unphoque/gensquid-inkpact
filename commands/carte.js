@@ -86,6 +86,9 @@ const showCard=async function(interaction){
                 }
             });
         }else{
+            //tmp
+            return await interaction.editReply("Aucune carte trouvée.")
+
             let options=[]
             for (let i=0;i<card.length;i++){
                 let c=card[i]
