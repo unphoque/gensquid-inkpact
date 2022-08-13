@@ -85,9 +85,9 @@ const showCard=async function(interaction){
                 }
             });
         }else{
-            console.log(card)
             let options=[]
-            for (const c in card){
+            for (const c of card){
+                console.log(c)
                 let obj={}
                 obj.label=c.NAME
                 obj.description=c.NAME+" - "+c.RARITY
