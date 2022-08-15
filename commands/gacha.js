@@ -58,7 +58,7 @@ const playGacha = async function (interaction) {
         if (res.length==0)return interaction.editReply("Impossible de trouver le compte.")
         let player=res[0];
         if(player.SEASNAILS<basePrice*nbDraw)return interaction.editReply("Tu n'as pas assez de coquillages pour tirer autant de cartes !")
-        player.SEASNAILS-=basePrice*nbDraw
+        player.price=basePrice*nbDraw
         for (let [r,i] of Object.entries(rarity)) {
             i.probaup = {}
             i.cards = []
@@ -143,7 +143,7 @@ const saveAndShowGacha=function(interaction, player, allCards, cards){
         for (let i=1;i<embeds.length;i++){
             await interaction.followUp({embeds:[embeds[i]],files:[attachments[i]]})
         }
-        db.update("UPDATE PLAYERS SET SEASNAILS="+player.SEASNAILS+",PITYX="+player.PITYX+",PITYS="+player.PITYS+" WHERE ID='"+user.id+"'")
+        db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS-"+player.price+",PITYX="+player.PITYX+",PITYS="+player.PITYS+" WHERE ID='"+user.id+"'")
     });
 }
 
@@ -173,7 +173,7 @@ const addCardToInventory = async function(user,cardinfo){
             return [embed,attachement]
         }else{
             if (res[0].CARDLEVEL==rarityinfo.maxlv){
-                let sql="UPDATE PLAYERS SET SEASNAILS=(SELECT SEASNAILS+"+rarityinfo.compensation+" FROM PLAYERS WHERE ID='"+user.id+"') WHERE ID='"+user.id+"'";
+                let sql="UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+rarityinfo.compensation+" WHERE ID='"+user.id+"'";
                 await db.update(sql,()=>{})
                 let cardname=cardinfo.NAME
                 let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")
@@ -207,7 +207,7 @@ const addCardToInventory = async function(user,cardinfo){
 
                 return [embed,attachement]
             }else{
-                let sql="UPDATE INVENTORY SET NBPOSSESSED="+(res[0].NBPOSSESSED+1)+" WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
+                let sql="UPDATE INVENTORY SET NBPOSSESSED=NBPOSSESSED+1 WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
                 await db.update(sql,()=>{})
 
                 let cardname=cardinfo.NAME
