@@ -68,11 +68,6 @@ client.on('ready', () => {
 //MESSAGE
 client.on("messageCreate", async message => {
 
-    if (message.author.id!="360438506595549214") {
-        return;
-    }
-
-
     let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
     if (res.length==0)return
     else{
