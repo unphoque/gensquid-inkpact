@@ -37,7 +37,7 @@ const rest = new REST({ version: '9' }).setToken(CONFIG.DISCORD_TOKEN);
 
 //application
 const { Client, Intents } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 
 const db=require("./db");
 const rarity=require("./rarity.json");
@@ -65,6 +65,36 @@ client.on('ready', () => {
     }
 });
 
+//MESSAGE
+client.on("messageCreate", async message => {
+
+    if (message.author.id!="360438506595549214") {
+        return;
+    }
+
+
+    let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
+    if (res.length==0)return
+    else{
+        let d=new Date().getTime()
+        if (res[0].LASTMESSAGE<d-3600000 && res[0].TOTALTODAY<20){
+            await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+4, TOTALTODAY=TOTALTODAY+4, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
+            message.react("🐚")
+        }
+    }
+});
+
+const reloadAtMidnight=function(){
+    db.update("UPDATE PLAYERS SET TOTALTODAY=0");
+    timer=setInterval(function(){db.update("UPDATE PLAYERS SET TOTALTODAY=0");},86400000)
+};
+
+let today = new Date();
+let tommorow = new Date(today.getFullYear(),today.getMonth(),today.getDate()+1);
+let timeToMidnight = (tommorow-today);
+let timer = setTimeout(reloadAtMidnight,timeToMidnight);
+
+//COMMANDS
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (interaction.commandName === 'poinf')await interaction.reply("miu miu")
