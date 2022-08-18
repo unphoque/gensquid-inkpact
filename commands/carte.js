@@ -153,6 +153,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
     let cardnumber=cardinfo.NUMBER
     await db.select(sql,async (res)=>{
         if (res.length==0){
+            if((await db.select("SELECT * FROM PLAYERS WHERE ID='"+user.id+"'")).length==0)return interaction.editReply("Le compte n'a pas été trouvé.")
+
             let sql="INSERT INTO INVENTORY (PLAYERID, CARDID) VALUES ('"+user.id+"','"+cardinfo.ID+"')"
             await db.insert(sql,()=>{})
 
