@@ -74,7 +74,7 @@ client.on("messageCreate", async message => {
         let d=new Date().getTime()
         if (res[0].LASTMESSAGE<d-3600000 && res[0].TOTALTODAY<20){
             try{
-                await message.react("🐚")
+                if(res[0].NOTIFICATIONS)await message.react("🐚")
                 await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+4, TOTALTODAY=TOTALTODAY+4, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
             }catch (e) {
 
@@ -127,6 +127,10 @@ client.on('interactionCreate', async interaction => {
             case "ban":
                 await interaction.deferReply({ephemeral:true});
                 await joueur.deletePlayer(interaction)
+                break
+            case "notifications":
+                await interaction.deferReply({ephemeral:true});
+                await joueur.updateNotif(interaction)
                 break
         }
     }else if(interaction.commandName=="carte"){

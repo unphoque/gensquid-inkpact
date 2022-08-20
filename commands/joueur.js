@@ -16,6 +16,11 @@ const data = new SlashCommandBuilder()
             .setName('ban')
             .setDescription('Supprime le compte mentionné (admin seulement). Attention, cela est définitif !')
             .addUserOption(option => option.setName('joueur').setDescription('Le joueur').setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('notifications')
+            .setDescription('Activer/désactiver les notifications du bot (réactions, messages...)')
+            .addBooleanOption(option => option.setName('onoff').setDescription('Activer => True, désactiver => False').setRequired(true)))
 
 module.exports.data=data
 
@@ -52,3 +57,13 @@ const deletePlayer=async function(interaction){
 };
 
 module.exports.deletePlayer=deletePlayer
+
+const updateNotif=async function (interaction) {
+    let user = interaction.user
+    let onoff = interaction.options.getBoolean("onoff")
+    let sql = "UPDATE PLAYERS SET NOTIFICATIONS=" + onoff + " WHERE ID='" + user.id + "'"
+    await db.update(sql,()=>{})
+    interaction.editReply("Les notifications ont été "+(onoff?"activées.":"désactivées."))
+}
+
+module.exports.updateNotif=updateNotif
