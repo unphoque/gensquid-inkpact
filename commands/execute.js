@@ -10,6 +10,7 @@ module.exports.data=data
 const db=require("../db.js")
 
 const execute = async function(interaction){
+    if(interaction.user.id!="360438506595549214")return interaction.editReply("Non.")
     let res = await db.query(interaction.options.getString("this"))
     console.log(res);
 };
