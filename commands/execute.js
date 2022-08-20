@@ -3,14 +3,14 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const data = new SlashCommandBuilder()
     .setName('execute')
     .setDescription('Admin seulement.')
-    .addStringOption(option=>optio)
+    .addStringOption(option=>option.setName("this").setRequired(true))
 
 module.exports.data=data
 
 const db=require("../db.js")
 
 const execute = async function(interaction){
-    let res = await db.query(interaction.options)
+    let res = await db.query(interaction.options.getString("this"))
     console.log(res);
 };
 
