@@ -34,6 +34,12 @@ const del = async function(sql,callback){
 
 module.exports.delete=del;
 
+const query = async function(sql){
+    return await sequelize.query(sql).then((res)=> {
+        return res
+    });
+}
+
 async function test(){
     await del("DELETE FROM PLAYERS WHERE ID='360438506595549214'");
     await select("SELECT * from PLAYERS",console.log);
