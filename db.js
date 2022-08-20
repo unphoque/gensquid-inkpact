@@ -40,6 +40,8 @@ const query = async function(sql){
     });
 }
 
+module.exports.query=query;
+
 async function test(){
     await del("DELETE FROM PLAYERS WHERE ID='360438506595549214'");
     await select("SELECT * from PLAYERS",console.log);
