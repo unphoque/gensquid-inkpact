@@ -15,4 +15,4 @@ const execute = async function(interaction){
     console.log(res);
 };
 
-module.exports=execute;
+module.exports.ex=execute;

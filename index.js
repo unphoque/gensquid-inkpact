@@ -178,7 +178,7 @@ client.on('interactionCreate', async interaction => {
         await echange.createExchange(interaction)
     }else if(interaction.commandName=="execute"){
         await interaction.deferReply({ephemeral:true});
-        await execute(interaction);
+        await execute.ex(interaction);
     }
 });
 
