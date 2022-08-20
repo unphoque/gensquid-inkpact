@@ -5,7 +5,7 @@ const data = new SlashCommandBuilder()
     .setDescription('Admin seulement.')
     .addStringOption(option=>option.setName("ex").setRequired(true))
 
-module.exports.data=data
+//module.exports.data=data
 
 const db=require("../db.js")
 
