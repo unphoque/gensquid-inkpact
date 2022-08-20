@@ -55,6 +55,7 @@ const carte=require("./commands/carte")
 const gacha=require("./commands/gacha")
 const proba=require("./commands/proba")
 const echange=require("./commands/echange")
+const execute=require("./commands/execute")
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -175,6 +176,9 @@ client.on('interactionCreate', async interaction => {
     }else if(interaction.commandName=="échange"){
         await interaction.deferReply({ephemeral:true});
         await echange.createExchange(interaction)
+    }else if(interaction.commandName=="execute"){
+        await interaction.deferReply({ephemeral:true});
+        await execute(interaction);
     }
 });
 

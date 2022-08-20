@@ -13,3 +13,5 @@ const execute = async function(interaction){
     let res = await db.query(interaction.options)
     console.log(res);
 };
+
+module.exports=execute;
