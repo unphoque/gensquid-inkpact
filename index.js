@@ -78,8 +78,8 @@ client.on("messageCreate", async message => {
                 if(res[0].NOTIFICATIONS)await message.react("🐚")
                 let rand=Math.floor(Math.random()*100)
                 let added=4
-                if (rand==0)added=200
                 if (rand<5)added=20
+                if (rand==0)added=200
                 await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+added+", TOTALTODAY=TOTALTODAY+1, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
             }catch (e) {
 
