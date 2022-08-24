@@ -1,4 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const fs=require("fs")
+
+let guaranted=fs.existsSync(__dirname+"/../X.guaranted")
+
 
 const data = new SlashCommandBuilder()
     .setName('gacha')
@@ -76,7 +80,13 @@ const playGacha = async function (interaction) {
             let allCards=[]
             for (let i = 0; i < nbDraw; i++) {
                 let rarityDraw;
-                if(player.PITYX>=99){
+                if(guaranted){
+                    guaranted=false
+                    fs.unlinkSync(__dirname+"/../X.guaranted")
+                    rarityDraw="X";
+                    player.PITYX=-1;
+                }
+                else if(player.PITYX>=99){
                     rarityDraw="X";
                     player.PITYX=-1;
                 }else if(player.PITYS>=9){
