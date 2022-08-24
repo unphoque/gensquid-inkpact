@@ -73,10 +73,14 @@ client.on("messageCreate", async message => {
     if (res.length==0)return
     else{
         let d=new Date().getTime()
-        if (res[0].LASTMESSAGE<d-3600000 && res[0].TOTALTODAY<20){
+        if (res[0].LASTMESSAGE<d-3600000 && res[0].TOTALTODAY<5){
             try{
                 if(res[0].NOTIFICATIONS)await message.react("🐚")
-                await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+4, TOTALTODAY=TOTALTODAY+4, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
+                let rand=Math.floor(Math.random()*100)
+                let added=4
+                if (rand==0)added=200
+                if (rand<5)added=20
+                await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+added+", TOTALTODAY=TOTALTODAY+1, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
             }catch (e) {
 
             }
