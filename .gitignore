@@ -1,6 +1,8 @@
 config.json
 .idea
+.idea/dataSources.xml
 gensquid_impact.db
+modifs.sql
 
 # Logs
 logs

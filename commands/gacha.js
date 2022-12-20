@@ -34,7 +34,8 @@ const showProbas = async function(interaction){
     });
     db.select("SELECT * FROM PLAYERS WHERE ID='"+interaction.user.id+"'",(res)=>{
         for (let [r,i] of Object.entries(rarity)) {
-            txt+=r+" - "+i.proba+"%\n"
+            if (r!="✰" && r!="X") txt+=r+" - "+i.proba+"%\n"
+            if (r=="X") txt+=r+" - 3%\n"
         }
         if (cardsUp){
             for (const card of cardsUp) {
@@ -42,8 +43,8 @@ const showProbas = async function(interaction){
             }
         }
         if(res.length==1){
-            txt+="\n\nX garantie : "+(100-res[0].PITYX)+" tir"+(res[0].PITYX!=99?"s":"")+
-                "\nS garantie : "+(10-res[0].PITYS)+" tir"+(res[0].PITYS!=9?"s":"")
+            txt+="\n\nX garantie : "+(80-res[0].PITYX)+" tir"+(res[0].PITYX!=99?"s":"")+
+                "\nS garantie : "+(12-res[0].PITYS)+" tir"+(res[0].PITYS!=9?"s":"")
         }
         let embed=new MessageEmbed().setTitle("Probabilité par rareté").setDescription(txt);
         interaction.editReply({embeds:[embed]})
@@ -67,31 +68,39 @@ const playGacha = async function (interaction) {
             i.probaup = {}
             i.cards = []
         }
-        db.select("SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co,CARDS ca where ca.COLLECTION=co.SHORT",(cardsDB)=>{
+        db.select("SELECT co.NAME as COLLECNAME, co.PROBAUP as cpu, * FROM COLLECTIONS co,CARDS ca where ca.COLLECTION=co.SHORT",(cardsDB)=>{
             let cards={}
+            let collections={}
             for (const c of cardsDB) {
+                if (!collections[c.COLLECTION])collections[c.COLLECTION]={"PROBAUP":c.cpu}
+                if (!collections[c.COLLECTION][c.RARITY]) collections[c.COLLECTION][c.RARITY]=[]
+
                 if(c.PROBAUP){
                     rarity[c.RARITY].probaup[c.ID]=c.PROBAUP;
-                }else{
+                }else if (c.OBTAINABLE){
                     rarity[c.RARITY].cards.push(c.ID)
+                    collections[c.COLLECTION][c.RARITY].push(c.ID)
                 }
                 cards[c.ID]=c
             }
             let allCards=[]
             for (let i = 0; i < nbDraw; i++) {
                 let rarityDraw;
+                let collecDraw;
                 if(guaranted){
                     guaranted=false
                     fs.unlinkSync(__dirname+"/../X.guaranted")
                     rarityDraw="X";
                     player.PITYX=-1;
                 }
-                else if(player.PITYX>=99){
+                else if(player.PITYX>=79){
                     rarityDraw="X";
                     player.PITYX=-1;
-                }else if(player.PITYS>=9){
+                    collecDraw="SL"
+                }else if(player.PITYS>=11){
                     rarityDraw="S"
                     player.PITYS=-1;
+                    collecDraw="SL"
                 }else{
                     let randRarity=Math.floor(Math.random()*100)
                     let currentRarityProba=0
@@ -107,9 +116,27 @@ const playGacha = async function (interaction) {
                     }else if(rarityDraw=="S"){
                         player.PITYS=-1
                     }
+
+                    let randCollec=Math.floor(Math.random()*100)
+                    let currentCollecProba=0;
+                    let probaupColl=["",0]
+                    let otherColl=[]
+                    for (const [co,p] of Object.entries(collections)){
+                        if(p["PROBAUP"])
+                            probaupColl=[co,p["PROBAUP"]]
+                        else
+                            otherColl.push(co)
+                    }
+                    if (randCollec<probaupColl[1]){
+                        collecDraw=probaupColl[0]
+                    }else {
+                        randCollec=Math.floor(randCollec*otherColl.length/100)
+                        collecDraw=otherColl[randCollec]
+                    }
                 }
                 player.PITYX++
                 player.PITYS++
+
 
                 let randCard=Math.floor(Math.random()*100)
                 let currentCardProba=0;
@@ -121,9 +148,15 @@ const playGacha = async function (interaction) {
                         break;
                     }
                 }
+
                 if(randCard>=currentCardProba){
-                    randCard=Math.floor(randCard*rarity[rarityDraw].cards.length/100)
-                    cardDraw=rarity[rarityDraw].cards[randCard]
+                    if(collections[collecDraw][rarityDraw].length){
+                        randCard=Math.floor(randCard*collections[collecDraw][rarityDraw].length/100)
+                        cardDraw=collections[collecDraw][rarityDraw][randCard]
+                    }else{
+                        randCard=Math.floor(randCard*rarity[rarityDraw].cards.length/100)
+                        cardDraw=rarity[rarityDraw].cards[randCard]
+                    }
                 }
                 allCards.push(cardDraw)
             }
@@ -177,7 +210,7 @@ const addCardToInventory = async function(user,cardinfo){
                 .setDescription("**NOUVELLE CARTE !**"+
                     "\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                     "\n**"+cardinfo.RARITY+"**"+
-                    "\nNiveau 1 "+(cardinfo.RARITY=="C"?"(max)":"0/"+rarityinfo.tonextlv))
+                    (cardinfo.RARITY!="✰"?"\nNiveau 1 "+(cardinfo.RARITY=="C"?"(max)":"0/"+rarityinfo.tonextlv):""))
                 .setImage("attachment://"+name)
 
             return [embed,attachement]
@@ -193,7 +226,7 @@ const addCardToInventory = async function(user,cardinfo){
                     .setTitle(cardinfo.NAME)
                     .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
-                        "\nNiveau "+res[0].CARDLEVEL+" (max)"+
+                        (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL+" (max)":"")+
                         "\n*Compensation : "+rarityinfo.compensation+" coquillage"+(rarityinfo.compensation==1?"*":"s*"))
                     .setImage("attachment://"+name)
 
@@ -212,7 +245,7 @@ const addCardToInventory = async function(user,cardinfo){
                     .setDescription("**NIVEAU SUP !**"+
                         "\n__**"+cardinfo.COLLECNAME+"**__ - n° "+ cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
-                        "\nNiveau "+newlv+(newlv==rarityinfo.maxlv?" (max)":" 0/"+rarityinfo.tonextlv))
+                        (cardinfo.RARITY!="✰"?"\nNiveau "+newlv+(newlv==rarityinfo.maxlv?" (max)":" 0/"+rarityinfo.tonextlv):""))
                     .setImage("attachment://"+name)
 
                 return [embed,attachement]
@@ -228,7 +261,7 @@ const addCardToInventory = async function(user,cardinfo){
                     .setTitle(cardinfo.NAME)
                     .setDescription("\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
-                        "\nNiveau "+res[0].CARDLEVEL+" "+(res[0].NBPOSSESSED+1)+"/"+rarityinfo.tonextlv)
+                        (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL+" "+(res[0].NBPOSSESSED+1)+"/"+rarityinfo.tonextlv:""))
                     .setImage("attachment://"+name)
 
                 return [embed,attachement]

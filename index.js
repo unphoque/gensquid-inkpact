@@ -69,6 +69,8 @@ client.on('ready', () => {
 //MESSAGE
 client.on("messageCreate", async message => {
 
+    if(Date.now()<Date.UTC(2022,11,25,7,0,0,0))return
+
     let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
     if (res.length==0)return
     else{
@@ -101,7 +103,10 @@ let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 //COMMANDS
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-    if (interaction.commandName === 'poinf')await interaction.reply("miu miu")
+    if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
+
+    if(Date.now()<Date.UTC(2022,11,25,7,0,0,0)) return await interaction.reply("Le bot est en maintenance pour le moment, mais il sera disponible... **BIENTÔT**")
+
     if (interaction.commandName === 'solde') {
         switch (interaction.options.getSubcommand()){
             case "moi":
