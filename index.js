@@ -4,6 +4,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const fs = require('fs')
 
+const permissions=require("./commands/permissions.js")
 
 const commands = [];
 const commandFiles = fs.readdirSync(__dirname+'/commands/').filter(file => file.endsWith('.js'));
@@ -105,7 +106,7 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
 
-    if(Date.now()<Date.UTC(2022,11,25,7,0,0,0)) return await interaction.reply("Le bot est en maintenance pour le moment, mais il sera disponible... **BIENTÔT**")
+    if(Date.now()<Date.UTC(2022,11,25,7,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("Le bot est en maintenance pour le moment, mais il sera disponible... **BIENTÔT**")
 
     if (interaction.commandName === 'solde') {
         switch (interaction.options.getSubcommand()){
@@ -146,7 +147,7 @@ client.on('interactionCreate', async interaction => {
     }else if(interaction.commandName=="carte"){
         switch (interaction.options.getSubcommand()){
             case "voir":
-                await interaction.deferReply();
+                await interaction.deferReply({fetchReply:true});
                 await carte.showCard(interaction)
                 break
             case "liste":
@@ -206,8 +207,10 @@ client.on("interactionCreate", async interaction=>{
    if (!interaction.isSelectMenu()) return;
 
    if (interaction.customId.includes("voir_")){
-       await interaction.deferReply({ephemeral:true});
+
+       await interaction.deferReply();
        await carte.showCardSelectMenu(interaction);
+       interaction.message.delete()
    }
 });
 

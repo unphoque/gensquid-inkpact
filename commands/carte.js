@@ -39,10 +39,7 @@ const {toFileString} = require("./util")
 const permissions = require("./permissions");
 const rarity=require("../rarity.json")
 
-const showCard=async function(interaction){
-    let user = interaction.user
-    let cardname=interaction.options.getString("carte")
-    let sql="SELECT * FROM CARDS WHERE UPPER(NAME) LIKE UPPER('%"+cardname+"%')"
+const showCardBase=async function(user,cardname, sql ,interaction){
     await db.select(sql,async (card)=>{
         if (card.length==0){
             await interaction.editReply("Aucune carte trouvée.")
@@ -64,7 +61,7 @@ const showCard=async function(interaction){
                             "\n**"+card[0].RARITY+"**"+
                             (card[0].RARITY!="✰"?"\nNiveau "+level:""))
                         .setImage("attachment://"+name)
-                        //.setImage("http://127.0.0.1/")
+                    //.setImage("http://127.0.0.1/")
 
                     interaction.editReply({embeds:[embed],files:[attachement]})
                 }
@@ -86,16 +83,16 @@ const showCard=async function(interaction){
                 }
             });
         }else{
-            //tmp
-            return await interaction.editReply("Aucune carte trouvée.")
-
             let options=[]
             for (let i=0;i<card.length;i++){
                 let c=card[i]
+                let collection = await db.select("SELECT co.* FROM COLLECTIONS co, CARDS ca WHERE ca.COLLECTION=co.SHORT AND ca.ID="+c.ID,(res)=> {
+                    return res[0]
+                });
                 let obj={}
                 obj.label=c.NAME
-                obj.description=c.NAME+" - "+c.RARITY
-                obj.value=toFileString(c.NAME)
+                obj.description=collection.NAME+" - "+c.RARITY
+                obj.value=c.NAME
                 options.push(obj)
             }
 
@@ -110,16 +107,22 @@ const showCard=async function(interaction){
             await interaction.editReply({components:[row]})
         }
     });
+}
+
+const showCard=async function(interaction){
+    let user = interaction.user
+    let cardname=interaction.options.getString("carte")
+    let sql="SELECT * FROM CARDS WHERE UPPER(NAME) LIKE UPPER('%"+cardname+"%')"
+    showCardBase(user,cardname,sql,interaction)
 };
 
 module.exports.showCard=showCard
 
 const showCardSelectMenu = function (interaction){
     let user = interaction.user
-    let cardname=interaction.options.getString("carte")
-    console.log(interaction)
-    let sql="SELECT * FROM CARDS"
-    interaction.editReply("")
+    let cardname=interaction.values[0]
+    let sql='SELECT * FROM CARDS WHERE UPPER(NAME)==UPPER("'+cardname+'")'
+    showCardBase(user,cardname,sql,interaction)
 }
 
 module.exports.showCardSelectMenu=showCardSelectMenu
