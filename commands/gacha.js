@@ -1,7 +1,8 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs=require("fs")
 
-let guaranted=fs.existsSync(__dirname+"/../X.guaranted")
+let xGuaranted=fs.existsSync(__dirname+"/../X.guaranted")
+let secGuaranted=fs.existsSync(__dirname+"/../sec.guaranted")
 
 
 const data = new SlashCommandBuilder()
@@ -87,8 +88,13 @@ const playGacha = async function (interaction) {
             for (let i = 0; i < nbDraw; i++) {
                 let rarityDraw;
                 let collecDraw;
-                if(guaranted){
-                    guaranted=false
+                if(secGuaranted){
+                    secGuaranted=false
+                    fs.unlinkSync(__dirname+"/../sec.guaranted")
+                    rarityDraw="✰";
+                    player.PITYX=-1;
+                }else if(xGuaranted){
+                    xGuaranted=false
                     fs.unlinkSync(__dirname+"/../X.guaranted")
                     rarityDraw="X";
                     player.PITYX=-1;
