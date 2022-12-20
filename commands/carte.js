@@ -92,7 +92,7 @@ const showCardBase=async function(user,cardname, sql ,interaction){
                 let obj={}
                 obj.label=c.NAME
                 obj.description=collection.NAME+" - "+c.RARITY
-                obj.value=c.NAME
+                obj.value=""+c.ID
                 options.push(obj)
             }
 
@@ -120,9 +120,9 @@ module.exports.showCard=showCard
 
 const showCardSelectMenu = function (interaction){
     let user = interaction.user
-    let cardname=interaction.values[0]
-    let sql='SELECT * FROM CARDS WHERE UPPER(NAME)==UPPER("'+cardname+'")'
-    showCardBase(user,cardname,sql,interaction)
+    let cardid=interaction.values[0]
+    let sql='SELECT * FROM CARDS WHERE ID='+cardid
+    showCardBase(user,cardid,sql,interaction)
 }
 
 module.exports.showCardSelectMenu=showCardSelectMenu
