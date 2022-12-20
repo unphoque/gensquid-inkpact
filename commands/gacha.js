@@ -92,7 +92,6 @@ const playGacha = async function (interaction) {
                     secGuaranted=false
                     fs.unlinkSync(__dirname+"/../sec.guaranted")
                     rarityDraw="✰";
-                    player.PITYX=-1;
                 }else if(xGuaranted){
                     xGuaranted=false
                     fs.unlinkSync(__dirname+"/../X.guaranted")
