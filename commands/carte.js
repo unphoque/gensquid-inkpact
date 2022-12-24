@@ -112,7 +112,7 @@ const showCardBase=async function(user,cardname, sql ,interaction){
 const showCard=async function(interaction){
     let user = interaction.user
     let cardname=interaction.options.getString("carte")
-    let sql="SELECT * FROM CARDS WHERE UPPER(NAME) LIKE UPPER('%"+cardname+"%')"
+    let sql="SELECT * FROM CARDS ca, INVENTORY i WHERE i.CARDID=ca.ID AND i.PLAYERID='"+user.id+"' AND UPPER(ca.NAME) LIKE UPPER('%"+cardname+"%')"
     showCardBase(user,cardname,sql,interaction)
 };
 
