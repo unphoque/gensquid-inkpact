@@ -35,8 +35,8 @@ const showProbas = async function(interaction){
     });
     db.select("SELECT * FROM PLAYERS WHERE ID='"+interaction.user.id+"'",(res)=>{
         for (let [r,i] of Object.entries(rarity)) {
-            if (r!="✰" && r!="X") txt+=r+" - "+i.proba+"%\n"
-            if (r=="X") txt+=r+" - 3%\n"
+            if (r!="✰" && r!="C") txt+=r+" - "+i.proba+"%\n"
+            if (r=="C") txt+=r+" - 41%\n"
         }
         if (cardsUp){
             for (const card of cardsUp) {
