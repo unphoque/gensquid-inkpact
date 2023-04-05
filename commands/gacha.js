@@ -55,6 +55,7 @@ const showProbas = async function(interaction){
 module.exports.showProbas=showProbas
 
 const basePrice=20;
+const guarantedCollec="SONV"
 
 const playGacha = async function (interaction) {
     let user = interaction.user;
@@ -92,22 +93,22 @@ const playGacha = async function (interaction) {
                     secGuaranted=false
                     fs.unlinkSync(__dirname+"/../sec.guaranted")
                     rarityDraw="✰";
-                    collecDraw="SL"
+                    collecDraw=guarantedCollec
                 }else if(xGuaranted){
                     xGuaranted=false
                     fs.unlinkSync(__dirname+"/../X.guaranted")
                     rarityDraw="X";
                     player.PITYX=-1;
-                    collecDraw="SL"
+                    collecDraw=guarantedCollec
                 }
                 else if(player.PITYX>=79){
                     rarityDraw="X";
                     player.PITYX=-1;
-                    collecDraw="SL"
+                    collecDraw=guarantedCollec
                 }else if(player.PITYS>=11){
                     rarityDraw="S"
                     player.PITYS=-1;
-                    collecDraw="SL"
+                    collecDraw=guarantedCollec
                 }else{
                     let randRarity=Math.floor(Math.random()*100)
                     let currentRarityProba=0

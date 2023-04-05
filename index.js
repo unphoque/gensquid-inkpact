@@ -105,7 +105,7 @@ let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    if(Date.now()<Date.UTC(2023,3,2,2,0,0,0) /*&& !permissions.includes(interaction.user.id)*/) return await interaction.reply("**EN GREVE !!!**")
+    if(Date.now()<Date.UTC(2023,3,8,2,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("Le bot est en maintenance, la nouvelle vague sort... **BIENTÔT** !")
 
     if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
 

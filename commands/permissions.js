@@ -4,9 +4,7 @@ const permissions = [
     //Pyon
     '146989550105788416',
     //Doppio
-    '172253467698528256',
-    //Lau
-    '199174041150554113'
+    '172253467698528256'
 ];
 
 module.exports=permissions
