@@ -101,7 +101,7 @@ const playGacha = async function (interaction) {
                     player.PITYX=-1;
                     collecDraw=guarantedCollec
                 }
-                else if(player.PITYX>=79){
+                else if(player.PITYX>=69){
                     rarityDraw="X";
                     player.PITYX=-1;
                     collecDraw=guarantedCollec
