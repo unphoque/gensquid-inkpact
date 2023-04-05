@@ -169,7 +169,7 @@ client.on('interactionCreate', async interaction => {
                 break
             case "x1":
             case "x10":
-            case "x100":
+            case "x50":
                 await interaction.deferReply();
                 await gacha.playGacha(interaction)
                 break

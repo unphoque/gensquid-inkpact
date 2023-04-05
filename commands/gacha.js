@@ -22,7 +22,7 @@ const data = new SlashCommandBuilder()
             .setDescription('Tirez 10 cartes d\'un coup ! (200 coquillages)'))
     .addSubcommand(subcommand =>
         subcommand
-            .setName('x100')
+            .setName('x50')
             .setDescription('Pour ceux qui ont un problème de riche.'))
 
 module.exports.data=data;
