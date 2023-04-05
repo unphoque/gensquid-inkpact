@@ -70,7 +70,7 @@ client.on('ready', () => {
 //MESSAGE
 client.on("messageCreate", async message => {
 
-    if(Date.now()<Date.UTC(2022,11,25,7,0,0,0))return
+    if(Date.now()<Date.UTC(2023,3,8,7,0,0,0))return
 
     let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
     if (res.length==0)return
