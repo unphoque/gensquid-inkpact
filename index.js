@@ -70,7 +70,7 @@ client.on('ready', () => {
 //MESSAGE
 client.on("messageCreate", async message => {
 
-    if(Date.now()<Date.UTC(2023,3,8,7,0,0,0))return
+    if(Date.now()<Date.UTC(2023,3,8,3,0,0,0))return
 
     let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
     if (res.length==0)return
@@ -105,7 +105,7 @@ let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    if(Date.now()<Date.UTC(2023,3,8,2,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("Le bot est en maintenance, la nouvelle vague sort... **BIENTÔT** !")
+    if(Date.now()<Date.UTC(2023,3,8,3,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("Le bot est en maintenance, la nouvelle vague sort... **BIENTÔT** !")
 
     if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
 
