@@ -25,6 +25,14 @@ module.exports.data=data;
 
 const db=require("../db")
 const rarity=require("../rarity.json")
+
+//récupération de la collection en cours
+let guarantedCollec=""
+db.select("SELECT * FROM COLLECTIONS WHERE PROBAUP > 0 ORDER BY PROBAUP DESC LIMIT 1",(res) => {
+    if (res.length)
+        guarantedCollec=res[0].SHORT
+});
+
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const {toFileString} = require("./util");
 
@@ -55,7 +63,6 @@ const showProbas = async function(interaction){
 module.exports.showProbas=showProbas
 
 const basePrice=20;
-const guarantedCollec="SONV"
 
 const playGacha = async function (interaction) {
     let user = interaction.user;
