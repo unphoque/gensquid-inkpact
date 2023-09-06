@@ -31,6 +31,7 @@ let guarantedCollec=""
 db.select("SELECT * FROM COLLECTIONS WHERE PROBAUP > 0 ORDER BY PROBAUP DESC LIMIT 1",(res) => {
     if (res.length)
         guarantedCollec=res[0].SHORT
+    console.log("Guaranted collection: "+guarantedCollec)
 });
 
 const {MessageEmbed, MessageAttachment} = require("discord.js");
