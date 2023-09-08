@@ -252,7 +252,12 @@ const buyCard=async function(interaction){
        let ownerId=res[0].OWNERID;
        if (ownerId==user.id) return await interaction.editReply("Vous ne pouvez pas acheter votre propre carte !")
        let cardId=res[0].CARDID;
-       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${res[0].PRICE} WHERE ID="${res[0].OWNERID}"`,()=>{})
+
+       let checkSnails=await db.select(`SELECT SEASNAILS from PLAYERS WHERE ID="${user.id}"`,(res)=>{return res[0].SEASNAILS});
+       if (checkSnails<res[0].PRICE) return await interaction.editReply("Vous n'avez pas assez pour acheter cette carte !")
+
+       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${res[0].PRICE} WHERE ID="${res[0].OWNERID}"`,()=>{});
+       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS-${res[0].PRICE} WHERE ID="${user.id}"`,()=>{});
        await delCard(ownerId, cardId);
        let sql=`SELECT * FROM CARDS WHERE ID=${cardId}`;
        await db.select(sql, async (res)=>{
