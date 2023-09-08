@@ -139,7 +139,7 @@ const showAllCards=async function(interaction){
         let desc=""
         for (let i = 0; i < res.length; i++) {
             let c=res[i]
-            desc+=c.NAME+" - Niveau "+c.CARDLEVEL+"\n"
+            desc+=c.NAME+" Lv "+c.CARDLEVEL+" - x"+c.QUANTITY+"\n"
         }
         embed.setDescription(desc)
         interaction.editReply({embeds:[embed]})
@@ -158,7 +158,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
         if (res.length==0){
             if((await db.select("SELECT * FROM PLAYERS WHERE ID='"+user.id+"'")).length==0)return interaction.editReply("Le compte n'a pas été trouvé.")
 
-            let sql="INSERT INTO INVENTORY (PLAYERID, CARDID) VALUES ('"+user.id+"','"+cardinfo.ID+"')"
+            let sql="INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY) VALUES ('"+user.id+"',"+cardinfo.ID+",1)"
             await db.insert(sql,()=>{})
 
             let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level1.png")
@@ -177,10 +177,14 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             if (res[0].CARDLEVEL==rarityinfo.maxlv){
                 let sql="UPDATE PLAYERS SET SEASNAILS=(SELECT SEASNAILS+"+rarityinfo.compensation+" FROM PLAYERS WHERE ID='"+user.id+"') WHERE ID='"+user.id+"'";
                 await db.update(sql,()=>{})
+                sql = `UPDATE INVENTORY SET QUANTITY=QUANTITY+1 WHERE CARDID=${cardinfo.ID} and PLAYERID="${user.id}"`
+                await db.update(sql,()=>{})
                 interaction.editReply(user.toString()+" a déjà "+cardinfo.NAME+" au niveau maximum, donc reçoit "+rarityinfo.compensation+" coquillages en compensation !")
             }else if(res[0].NBPOSSESSED+1==rarityinfo.tonextlv){
                 let newlv= res[0].CARDLEVEL+1
-                let sql="UPDATE INVENTORY SET CARDLEVEL="+newlv+", NBPOSSESSED=0 WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
+                let sql="UPDATE INVENTORY SET CARDLEVEL="+newlv+", NBPOSSESSED=0 WHERE PLAYERID='"+user.id+"' AND CARDID="+cardinfo.ID+""
+                await db.update(sql,()=>{})
+                sql = `UPDATE INVENTORY SET QUANTITY=QUANTITY+1 WHERE CARDID=${cardinfo.ID} and PLAYERID="${user.id}"`
                 await db.update(sql,()=>{})
 
                 let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level"+newlv+".png")
@@ -196,6 +200,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a reçu "+cardinfo.NAME+" ! Elle passe au niveau "+newlv+" !"})
             }else{
                 let sql="UPDATE INVENTORY SET NBPOSSESSED="+(res[0].NBPOSSESSED+1)+" WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
+                await db.update(sql,()=>{})
+                sql = `UPDATE INVENTORY SET QUANTITY=QUANTITY+1 WHERE CARDID=${cardinfo.ID} and PLAYERID="${user.id}"`
                 await db.update(sql,()=>{})
 
                 let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")

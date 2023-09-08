@@ -57,6 +57,7 @@ const gacha=require("./commands/gacha")
 const proba=require("./commands/proba")
 const echange=require("./commands/echange")
 const execute=require("./commands/execute")
+const blackmarket=require("./commands/blackmarket")
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -105,7 +106,7 @@ let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    if(Date.now()<Date.UTC(2023,8,8,6,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("Nan, j'ai pas envie. \n# ||BIENTÔT||")
+    if(Date.now()<Date.UTC(2023,10,8,6,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("Nan, j'ai pas envie. \n# ||BIENTÔT||")
 
     if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
 
@@ -161,6 +162,25 @@ client.on('interactionCreate', async interaction => {
                 await carte.giveCard(interaction)
                 break
         }
+    }else if(interaction.commandName=="blackmarket"){
+        switch (interaction.options.getSubcommand()){
+            case "vendre":
+                await interaction.deferReply({ephemeral:true, fetchReply:true});
+                await blackmarket.sellCard(interaction)
+                break
+            case "retirer":
+                await interaction.deferReply({ephemeral:true})
+                await blackmarket.removeCard(interaction)
+                break
+            case "rechercher":
+                await interaction.deferReply({ephemeral:true})
+                await blackmarket.searchMarket(interaction)
+                break
+            case "acheter":
+                await interaction.deferReply()
+                await blackmarket.buyCard(interaction)
+                break
+        }
     }else if(interaction.commandName=="gacha"){
         switch (interaction.options.getSubcommand()){
             case "probas":
@@ -213,6 +233,13 @@ client.on("interactionCreate", async interaction=>{
        await carte.showCardSelectMenu(interaction);
        interaction.message.delete()
    }
+
+    if (interaction.customId.includes("sell_")){
+
+        await interaction.deferReply({ephemeral:true});
+        await blackmarket.sellCardSelectMenu(interaction);
+        interaction.message.delete()
+    }
 });
 
 client.login(CONFIG.DISCORD_TOKEN);
