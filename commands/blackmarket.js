@@ -246,7 +246,7 @@ const delCard=async function(ownerId, cardId){
 const buyCard=async function(interaction){
     let user=interaction.user
     let sellId=interaction.options.getInteger("id")
-    let sql=`SELECT * FROM BLACKMARKET WHERE SELLID=${sellId}`
+    let sql=`SELECT ca.RARITY, b.* FROM CARDS ca, BLACKMARKET b WHERE SELLID=${sellId} AND b.CARDID=ca.ID`
     await db.select(sql, async (res)=>{
        if(res.length==0) return await interaction.editReply("La transaction demandée n'existe pas.");
        let ownerId=res[0].OWNERID;
@@ -254,9 +254,11 @@ const buyCard=async function(interaction){
        let cardId=res[0].CARDID;
 
        let checkSnails=await db.select(`SELECT SEASNAILS from PLAYERS WHERE ID="${user.id}"`,(res)=>{return res[0].SEASNAILS});
-       if (checkSnails<res[0].PRICE) return await interaction.editReply("Vous n'avez pas assez pour acheter cette carte !")
+       if (checkSnails<res[0].PRICE) return await interaction.editReply("Vous n'avez pas assez pour acheter cette carte !");
 
-       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${res[0].PRICE} WHERE ID="${res[0].OWNERID}"`,()=>{});
+       let effectiveGain=res[0].PRICE-rarity[res[0].RARITY].compensation
+
+       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${effectiveGain} WHERE ID="${res[0].OWNERID}"`,()=>{});
        await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS-${res[0].PRICE} WHERE ID="${user.id}"`,()=>{});
        await delCard(ownerId, cardId);
        let sql=`SELECT * FROM CARDS WHERE ID=${cardId}`;
