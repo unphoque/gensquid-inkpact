@@ -47,10 +47,15 @@ const sellCardBase=async function(user,cardname, price ,sql,interaction){
             let sql="SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co, CARDS, INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardid+" AND ID="+cardid+" AND SHORT=COLLECTION";
             await db.select(sql,async (res)=>{
                 if(res.length==1){
+                    let sql=`SELECT * FROM BLACKMARKET WHERE OWNERID=${user.id} AND CARDID=${cardid}`
+                    let quantitySold = await db.select(sql,(res)=> {
+                        return res
+                    })
+                    if (quantitySold.length>=res[0].QUANTITY) return interaction.editReply("Vous n'avez plus de quoi mettre cette carte en vente !")
                     let pricemin=rarity[cardrarity].compensation;
                     if (price<pricemin) return interaction.editReply("Vous ne pouvez pas vendre cette carte à moins de "+pricemin+" coquillages.")
                     let sellid=Date.now()
-                    let sql=`INSERT INTO BLACKMARKET(SELLID, OWNERID, CARDID, PRICE) VALUES (${sellid}, ${user.id}, ${cardid}, ${price})`
+                    sql=`INSERT INTO BLACKMARKET(SELLID, OWNERID, CARDID, PRICE) VALUES (${sellid}, ${user.id}, ${cardid}, ${price})`
                     await db.insert(sql, async ()=>{})
                     interaction.editReply(`Vous avez mis ${cardname} au marché noir pour ${price} coquillages.`)
                 }
@@ -127,7 +132,7 @@ module.exports.removeCard = removeCard
 const searchMarket=async function(interaction){
     let user = interaction.user
     let cardname = interaction.options.getString("carte")
-    let sql=`SELECT ca.NAME as NAME, b.SELLID as SELLID, b.PRICE as PRICE FROM CARDS ca, BLACKMARKET b WHERE ca.ID=b.CARDID AND "${cardname}" IN ca.NAME`
+    let sql=`SELECT ca.NAME as NAME, b.SELLID as SELLID, b.PRICE as PRICE FROM CARDS ca, BLACKMARKET b WHERE ca.ID=b.CARDID AND UPPER(ca.NAME) LIKE UPPER("%${cardname}%")`
     await db.select(sql,(res)=>{
         if (res.length==0) return interaction.editReply("Aucune carte disponible pour cette recherche.")
         let embed=new MessageEmbed().setTitle("Carte - Prix - ID")
