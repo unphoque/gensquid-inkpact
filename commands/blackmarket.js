@@ -1,10 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs=require("fs")
 
-let xGuaranted=fs.existsSync(__dirname+"/../X.guaranted")
-let secGuaranted=fs.existsSync(__dirname+"/../sec.guaranted")
-
-
 const data = new SlashCommandBuilder()
     .setName('blackmarket')
     .setDescription('Commandes liées au marché noir')
@@ -37,7 +33,6 @@ const rarity=require("../rarity.json")
 
 const {MessageEmbed, MessageAttachment, MessageActionRow, MessageSelectMenu} = require("discord.js");
 const {toFileString} = require("./util");
-const permissions = require("./permissions");
 
 const sellCardBase=async function(user,cardname, price ,sql,interaction){
     await db.select(sql,async (card)=>{
@@ -220,7 +215,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
     })
 }
 
-const removeCard=async function(ownerId, cardId){
+const delCard=async function(ownerId, cardId){
     let sql=`SELECT ca.RARITY, i.* FROM CARDS ca, INVENTORY i WHERE i.CARDID=${cardId} AND i.PLAYERID='${ownerId}' AND ca.ID=i.CARDID`
     await db.select(sql, async (res)=>{
         let inv=res[0];
@@ -252,7 +247,7 @@ const buyCard=async function(interaction){
        let ownerId=res[0].OWNERID;
        if (ownerId==user.id) return await interaction.editReply("Vous ne pouvez pas acheter votre propre carte !")
        let cardId=res[0].CARDID;
-       await removeCard(ownerId, cardId);
+       await delCard(ownerId, cardId);
        let sql=`SELECT * FROM CARDS WHERE ID=${cardId}`;
        await db.select(sql, async (res)=>{
            let cardinfo=res[0]
