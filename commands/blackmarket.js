@@ -280,7 +280,7 @@ module.exports.buyCard=buyCard
 const showAllBM=async function(interaction){
     let user = interaction.user
     if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
-    let sql=`SELECT ca.NAME as CARDNAME, b.PRICE as PRICE, p.NAME as PLAYERNAME FROM CARDS ca, BLACKMARKET b, PLAYERS p WHERE ca.ID=b.CARDID AND b.OWNERID=p.ID AND UPPER(ca.NAME) LIKE UPPER("%${cardname}%")`
+    let sql=`SELECT ca.NAME as CARDNAME, b.PRICE as PRICE, p.NAME as PLAYERNAME FROM CARDS ca, BLACKMARKET b, PLAYERS p WHERE ca.ID=b.CARDID AND b.OWNERID=p.ID`
     await db.select(sql,(res)=>{
         if (res.length==0) return interaction.editReply("Aucune carte disponible.")
         let embed=new MessageEmbed().setTitle("Propriétaire - Carte - Prix")
