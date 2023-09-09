@@ -12,7 +12,13 @@ const data = new SlashCommandBuilder()
     .addSubcommand(subcommand =>
         subcommand
             .setName('liste')
-            .setDescription('Affiche la liste de vos cartes et leur niveau !'))
+            .setDescription('Affiche la liste de vos cartes et leur niveau !')
+            .addStringOption(option => option.setName('collection').setDescription('Collection à afficher')
+                .addChoices(
+                    {name:"SO",value:"SO"},
+                    {name:"SL",value:"SL"},
+                    {name:"SONV",value:"SONV"},
+                    {name:"PE",value:"PE"})))
     .addSubcommand(subcommand =>
         subcommand
             .setName('joueur')
@@ -133,13 +139,17 @@ const showAllCards=async function(interaction){
         if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
         else user = interaction.options.getUser("joueur")
     }
-    let sql="SELECT * FROM CARDS, INVENTORY WHERE PLAYERID='"+user.id+"' AND ID=CARDID"
+    let collec=""
+    try {
+        collec=interaction.options.getString("collection")
+    }catch (e) {}
+    let sql=`SELECT * FROM CARDS, INVENTORY WHERE PLAYERID='${user.id}' AND ID=CARDID ${collec?`AND COLLECTION='${collec}'`:""} SORT BY CARDID`
     await db.select(sql,(res)=>{
-        let embed=new MessageEmbed().setTitle("Inventaire de "+user.username)
+        let embed=new MessageEmbed().setTitle("Inventaire de "+user.username+(collec?` (${collec})`:""))
         let desc=""
         for (let i = 0; i < res.length; i++) {
             let c=res[i]
-            desc+=c.NAME+" Lv "+c.CARDLEVEL+" - x"+c.QUANTITY+"\n"
+            desc+=c.NAME+" - "+c.RARITY+" Lv "+c.CARDLEVEL+" - x"+c.QUANTITY+"\n"
         }
         embed.setDescription(desc)
         interaction.editReply({embeds:[embed]})
