@@ -227,6 +227,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
 }
 
 const delCard=async function(ownerId, cardId){
+    await db.delete(`DELETE FROM BLACKMARKET WHERE OWNERID=${ownerId} AND CARDID=${cardId}`)
+
     let sql=`SELECT ca.RARITY, i.* FROM CARDS ca, INVENTORY i WHERE i.CARDID=${cardId} AND i.PLAYERID='${ownerId}' AND ca.ID=i.CARDID`
     await db.select(sql, async (res)=>{
         let inv=res[0];
