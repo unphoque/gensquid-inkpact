@@ -180,6 +180,10 @@ client.on('interactionCreate', async interaction => {
                 await interaction.deferReply()
                 await blackmarket.buyCard(interaction)
                 break
+            case "liste":
+                await interaction.deferReply({ephemeral:true})
+                await blackmarket.showAllBM(interaction)
+                break
         }
     }else if(interaction.commandName=="gacha"){
         switch (interaction.options.getSubcommand()){

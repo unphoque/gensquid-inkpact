@@ -293,3 +293,5 @@ const showAllBM=async function(interaction){
         interaction.editReply({embeds:[embed]})
     });
 }
+
+module.exports.showAllBM=showAllBM
