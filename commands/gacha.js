@@ -215,7 +215,7 @@ const addCardToInventory = async function(user,cardinfo){
     let cardnumber=cardinfo.NUMBER
     let ret = await db.select(sql,async (res)=>{
         if (res.length==0){
-            let sql="INSERT INTO INVENTORY (PLAYERID, CARDID) VALUES ('"+user.id+"','"+cardinfo.ID+"')"
+            let sql="INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY) VALUES ('"+user.id+"','"+cardinfo.ID+"', 1)"
             await db.insert(sql,()=>{})
 
             let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level1.png")
@@ -234,6 +234,8 @@ const addCardToInventory = async function(user,cardinfo){
             if (res[0].CARDLEVEL==rarityinfo.maxlv){
                 let sql="UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+rarityinfo.compensation+" WHERE ID='"+user.id+"'";
                 await db.update(sql,()=>{})
+                sql = `UPDATE INVENTORY SET QUANTITY=QUANTITY+1 WHERE CARDID=${cardinfo.ID} and PLAYERID="${user.id}"`
+                await db.update(sql,()=>{})
                 let cardname=cardinfo.NAME
                 let file=toFileString(__dirname+"/../img/"+cardcollec+"_"+cardnumber+"_level"+res[0].CARDLEVEL+".png")
                 let name=toFileString(cardname+".png")
@@ -249,7 +251,7 @@ const addCardToInventory = async function(user,cardinfo){
                 return [embed,attachement]
             }else if((res[0].NBPOSSESSED+1)==rarityinfo.tonextlv){
                 let newlv= res[0].CARDLEVEL+1
-                let sql="UPDATE INVENTORY SET CARDLEVEL="+newlv+", NBPOSSESSED=0 WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardid+"'"
+                let sql="UPDATE INVENTORY SET CARDLEVEL="+newlv+", NBPOSSESSED=0, QUANTITY=QUANTITY+1 WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardid+"'"
                 await db.update(sql,()=>{})
 
                 let cardname=cardinfo.NAME
@@ -266,7 +268,7 @@ const addCardToInventory = async function(user,cardinfo){
 
                 return [embed,attachement]
             }else{
-                let sql="UPDATE INVENTORY SET NBPOSSESSED=NBPOSSESSED+1 WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
+                let sql="UPDATE INVENTORY SET NBPOSSESSED=NBPOSSESSED+1, QUANTITY=QUANTITY+1 WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
                 await db.update(sql,()=>{})
 
                 let cardname=cardinfo.NAME
