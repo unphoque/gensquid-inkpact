@@ -143,7 +143,7 @@ const showAllCards=async function(interaction){
     try {
         collec=interaction.options.getString("collection")
     }catch (e) {}
-    let sql=`SELECT * FROM CARDS, INVENTORY WHERE PLAYERID='${user.id}' AND ID=CARDID ${collec?`AND COLLECTION='${collec}'`:""} SORT BY CARDID`
+    let sql=`SELECT * FROM CARDS, INVENTORY WHERE PLAYERID='${user.id}' AND ID=CARDID ${collec?`AND COLLECTION='${collec}'`:""} ORDER BY CARDID`
     await db.select(sql,(res)=>{
         let embed=new MessageEmbed().setTitle("Inventaire de "+user.username+(collec?` (${collec})`:""))
         let desc=""
