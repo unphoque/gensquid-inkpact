@@ -61,6 +61,7 @@ const sellCardBase=async function(user,cardname, price ,sql,interaction){
                     let pricemin=rarity[cardrarity].compensation;
                     if (price<pricemin) return interaction.editReply("Vous ne pouvez pas vendre cette carte à moins de "+pricemin+" coquillages.")
                     let sellid=Date.now()
+                    sellid=sellid-Math.floor(sellid/100000)*100000
                     sql=`INSERT INTO BLACKMARKET(SELLID, OWNERID, CARDID, PRICE) VALUES (${sellid}, ${user.id}, ${cardid}, ${price})`
                     await db.insert(sql, async ()=>{})
                     interaction.editReply(`Vous avez mis ${cardname} au marché noir pour ${price} coquillages.`)
