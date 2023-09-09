@@ -25,6 +25,11 @@ const data = new SlashCommandBuilder()
             .setName('rechercher')
             .setDescription('Recherchez une carte en particulier sur le marché noir.')
             .addStringOption(option => option.setName('carte').setDescription('Nom de la carte à rechercher').setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('liste')
+            .setDescription('Liste toutes les cartes, propriétaires, et prix du marché noir (admin seulement).'))
+
 
 module.exports.data=data;
 
@@ -33,6 +38,7 @@ const rarity=require("../rarity.json")
 
 const {MessageEmbed, MessageAttachment, MessageActionRow, MessageSelectMenu} = require("discord.js");
 const {toFileString} = require("./util");
+const permissions = require("./permissions");
 
 const sellCardBase=async function(user,cardname, price ,sql,interaction){
     await db.select(sql,async (card)=>{
@@ -270,3 +276,20 @@ const buyCard=async function(interaction){
 }
 
 module.exports.buyCard=buyCard
+
+const showAllBM=async function(interaction){
+    let user = interaction.user
+    if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
+    let sql=`SELECT ca.NAME as CARDNAME, b.PRICE as PRICE, p.NAME as PLAYERNAME FROM CARDS ca, BLACKMARKET b, PLAYERS p WHERE ca.ID=b.CARDID AND b.OWNERID=p.ID AND UPPER(ca.NAME) LIKE UPPER("%${cardname}%")`
+    await db.select(sql,(res)=>{
+        if (res.length==0) return interaction.editReply("Aucune carte disponible.")
+        let embed=new MessageEmbed().setTitle("Propriétaire - Carte - Prix")
+        let desc=""
+        for (let i = 0; i < res.length; i++) {
+            let c=res[i]
+            desc+=`${c.PLAYERNAME} - ${c.CARDNAME} - ${c.PRICE}\n`
+        }
+        embed.setDescription(desc)
+        interaction.editReply({embeds:[embed]})
+    });
+}
