@@ -70,7 +70,7 @@ client.on('ready', () => {
 
     // EXECUTE PERIODICALLY
 
-    schedule.scheduleJob('0 0 * * *', async () => {
+    schedule.scheduleJob('*/5 * * * *', async () => {
         let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
         let channel=await guild.channels.fetch('1007698058156453889')
         blackmarket.showWeekly(channel)
