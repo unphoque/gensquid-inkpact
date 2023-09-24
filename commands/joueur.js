@@ -24,7 +24,7 @@ const data = new SlashCommandBuilder()
     .addSubcommand(subcommand =>
         subcommand
             .setName('emoji')
-            .setDescription('Choisir un emoji custom pour la réaction du bot ! Ne fonctionne qu\'avec les emojis par défaut et ceux du serveur Squid Order.')
+            .setDescription('Choisir un emoji custom pour la réaction du bot, parmi ceux de Discord et du serveur Squid Order.')
             .addStringOption(option => option.setName('emoji').setDescription('Cliquez sur le bouton emoji dans la barre de chat et sélectionnez votre emote.').setRequired(true)))
 
 
