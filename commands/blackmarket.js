@@ -36,7 +36,7 @@ module.exports.data=data;
 const db=require("../db")
 const rarity=require("../rarity.json")
 
-const {MessageEmbed, MessageAttachment, MessageActionRow, MessageSelectMenu} = require("discord.js");
+const {MessageEmbed, MessageAttachment, MessageActionRow, MessageSelectMenu, TextChannel} = require("discord.js");
 const {toFileString} = require("./util");
 const permissions = require("./permissions");
 
@@ -298,3 +298,20 @@ const showAllBM=async function(interaction){
 }
 
 module.exports.showAllBM=showAllBM
+
+const showWeekly=async function(channel){
+    let sql=`SELECT b.SELLID as SELLID, ca.NAME as CARDNAME, b.PRICE as PRICE FROM CARDS ca, BLACKMARKET b WHERE ca.ID=b.CARDID`
+    await db.select(sql,(res)=>{
+        if (res.length==0) return interaction.editReply("Aucune carte disponible.")
+        let embed=new MessageEmbed().setTitle("Cartes disponibles au marché noir :")
+        let desc=""
+        for (let i = 0; i < res.length; i++) {
+            let c=res[i]
+            desc+=`${c.SELLID} - ${c.CARDNAME} - ${c.PRICE} coquillages\n`
+        }
+        embed.setDescription(desc)
+        channel.send({embeds:[embed]})
+    });
+}
+
+module.exports.showWeekly=showWeekly

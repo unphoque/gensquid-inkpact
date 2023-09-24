@@ -39,6 +39,7 @@ const rest = new REST({ version: '9' }).setToken(CONFIG.DISCORD_TOKEN);
 //application
 const { Client, Intents } = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
+const schedule=require('node-schedule');
 
 const db=require("./db");
 const rarity=require("./rarity.json");
@@ -66,7 +67,17 @@ client.on('ready', () => {
         client.user.setPresence({status: "invisible"})
         client.user.setActivity(CONFIG.STATUS,{type:ActivityType.Custom})
     }
+
+    // EXECUTE PERIODICALLY
+
+    schedule.scheduleJob('0 0 * * *', async () => {
+        let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
+        let channel=await guild.channels.fetch('1007698058156453889')
+        blackmarket.showWeekly(channel)
+    })
 });
+
+
 
 //MESSAGE
 client.on("messageCreate", async message => {
