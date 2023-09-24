@@ -21,6 +21,12 @@ const data = new SlashCommandBuilder()
             .setName('notifications')
             .setDescription('Activer/désactiver les notifications du bot (réactions, messages...)')
             .addBooleanOption(option => option.setName('onoff').setDescription('Activer => True, désactiver => False').setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('emoji')
+            .setDescription('Choisir un emoji custom pour la réaction du bot ! Ne fonctionne qu\'avec les emojis par défaut et ceux du serveur Squid Order.')
+            .addStringOption(option => option.setName('emoji').setDescription('Cliquez sur le bouton emoji dans la barre de chat et sélectionnez votre emote.').setRequired(true)))
+
 
 module.exports.data=data
 
@@ -67,3 +73,13 @@ const updateNotif=async function (interaction) {
 }
 
 module.exports.updateNotif=updateNotif
+
+const updateEmoji=async function (interaction) {
+    let user = interaction.user
+    let emoji = interaction.options.getString("emoji").trim()
+    let sql = `UPDATE PLAYERS SET NOTIFICATIONS=1, EMOJI='${emoji}' WHERE ID='${user.id}'`
+    await db.update(sql,()=>{})
+    await interaction.editReply(`La réaction sera désormais ${emoji}`)
+}
+
+module.exports.updateEmoji=updateEmoji

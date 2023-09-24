@@ -79,12 +79,20 @@ client.on("messageCreate", async message => {
         let d=new Date().getTime()
         if (res[0].LASTMESSAGE<d-3600000 && res[0].TOTALTODAY<5){
             try{
-                if(res[0].NOTIFICATIONS)await message.react("🐚")
                 let rand=Math.floor(Math.random()*100)
                 let added=4
                 if (rand<5)added=20
                 if (rand==0)added=200
                 await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+added+", TOTALTODAY=TOTALTODAY+1, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
+
+                if(res[0].NOTIFICATIONS){
+                    try{
+                        await message.react(res[0].EMOJI)
+                    }catch (e) {
+                        await message.react("🐚")
+                    }
+                }
+
             }catch (e) {
 
             }
@@ -144,6 +152,10 @@ client.on('interactionCreate', async interaction => {
             case "notifications":
                 await interaction.deferReply({ephemeral:true});
                 await joueur.updateNotif(interaction)
+                break
+            case "emoji":
+                await interaction.deferReply({ephemeral:true});
+                await joueur.updateEmoji(interaction)
                 break
         }
     }else if(interaction.commandName=="carte"){
