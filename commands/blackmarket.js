@@ -267,7 +267,7 @@ const buyCard=async function(interaction){
 
        let effectiveGain=res[0].PRICE-rarity[res[0].RARITY].compensation
 
-       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${effectiveGain} WHERE ID="${res[0].OWNERID}"`,()=>{});
+       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${(effectiveGain>0?effectiveGain:0)} WHERE ID="${res[0].OWNERID}"`,()=>{});
        await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS-${res[0].PRICE} WHERE ID="${user.id}"`,()=>{});
        await delCard(ownerId, cardId);
        let sql=`SELECT * FROM CARDS WHERE ID=${cardId}`;

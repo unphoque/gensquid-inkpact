@@ -51,6 +51,11 @@ db.select("SELECT * FROM RARITY",(res) => {
 
 });
 
+process.on('SIGINT', function () {
+    schedule.gracefulShutdown()
+        .then(() => process.exit(0))
+})
+
 const solde=require("./commands/solde")
 const joueur=require("./commands/joueur")
 const carte=require("./commands/carte")
@@ -60,7 +65,7 @@ const echange=require("./commands/echange")
 const execute=require("./commands/execute")
 const blackmarket=require("./commands/blackmarket")
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     if (CONFIG.IS_INVISIBLE) {
@@ -69,8 +74,13 @@ client.on('ready', () => {
     }
 
     // EXECUTE PERIODICALLY
+    await schedule.gracefulShutdown()
 
-    schedule.scheduleJob('0 0 * * 0', async () => {
+    schedule.scheduleJob('0 0 * * *', async () =>{
+        await db.update("UPDATE BLACKMARKET SET PRICE=PRICE-1 WHERE PRICE>1;")
+    })
+
+    schedule.scheduleJob('0 4 * * 1', async () => {
         let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
         let channel=await guild.channels.fetch('1007698058156453889')
         blackmarket.showWeekly(channel)
