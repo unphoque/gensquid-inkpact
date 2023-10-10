@@ -65,7 +65,7 @@ module.exports.showProbas=showProbas
 
 const basePrice=20;
 
-const playGacha = async function (interaction) {
+const playGacha = async function (interaction, forcedRarity="") {
     let user = interaction.user;
     let nbDraw = parseInt(interaction.options.getSubcommand().substring(1))
     let sql = "SELECT * FROM PLAYERS WHERE ID='" + user.id + "'"
@@ -74,6 +74,25 @@ const playGacha = async function (interaction) {
         let player=res[0];
         if(player.SEASNAILS<basePrice*nbDraw)return interaction.editReply("Tu n'as pas assez de coquillages pour tirer autant de cartes !")
         player.price=basePrice*nbDraw
+
+        let chaosStatus=""
+        if(!forcedRarity){
+            let chaosRand = Math.floor(Math.random() * 100)
+            if (chaosRand == 0) {
+                chaosStatus = "busted"
+            } else if (chaosRand == 1) {
+                player.price = 0
+                chaosStatus = "free"
+            } else {
+                let loyaltyRand = Math.floor(Math.random() * 100)
+                if (loyaltyRand < player.LOYALTYCARD) {
+                    player.price = 0
+                    player.LOYALTYCARD = 0
+                    chaosStatus = "loyalty"
+                }
+            }
+        }
+
         for (let [r,i] of Object.entries(rarity)) {
             i.probaup = {}
             i.cards = []
@@ -108,6 +127,9 @@ const playGacha = async function (interaction) {
                     rarityDraw="X";
                     player.PITYX=-1;
                     collecDraw=guarantedCollec
+                }
+                else if(chaosStatus=="busted"){
+                    rarityDraw="C";
                 }
                 else if(player.PITYX>=69){
                     rarityDraw="X";
@@ -153,7 +175,6 @@ const playGacha = async function (interaction) {
                 player.PITYX++
                 player.PITYS++
 
-
                 let randCard=Math.floor(Math.random()*100)
                 let currentCardProba=0;
                 let cardDraw;
@@ -176,13 +197,19 @@ const playGacha = async function (interaction) {
                 }
                 allCards.push(cardDraw)
             }
-            saveAndShowGacha(interaction, player, allCards, cards)
+            saveAndShowGacha(interaction, player, allCards, cards, chaosStatus)
         });
 
     })
 }
 
-const saveAndShowGacha=function(interaction, player, allCards, cards){
+const chaosResponse={
+    "busted":"Et merci beaucoup pour tes coquillages !",
+    "free":"Au fait, ce tirage ne t'as rien coûté ! Cadeau !",
+    "loyalty":"Grâce à ta carte de fidélité, ce tirage était gratuit !"
+}
+
+const saveAndShowGacha=function(interaction, player, allCards, cards, chaosStatus){
     let user=interaction.user
     let sql="SELECT * FROM INVENTORY WHERE PLAYERID='"+user.id+"'"
     db.select(sql,async (res) => {
@@ -194,7 +221,7 @@ const saveAndShowGacha=function(interaction, player, allCards, cards){
         let attachments = []
         for (let i = 0; i < allCards.length; i++) {
             let cardDraw = allCards[i]
-            let [embed,attachment]=await addCardToInventory(user, cards[cardDraw])
+            let [embed,attachment]=await addCardToInventory(user, cards[cardDraw], chaosStatus)
             embeds.push(embed)
             attachments.push(attachment)
         }
@@ -202,11 +229,12 @@ const saveAndShowGacha=function(interaction, player, allCards, cards){
         for (let i=1;i<embeds.length;i++){
             await interaction.followUp({embeds:[embeds[i]],files:[attachments[i]]})
         }
+        if(chaosStatus)await interaction.followUp(chaosResponse[chaosStatus])
         db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS-"+player.price+",PITYX="+player.PITYX+",PITYS="+player.PITYS+" WHERE ID='"+user.id+"'")
     });
 }
 
-const addCardToInventory = async function(user,cardinfo){
+const addCardToInventory = async function(user,cardinfo, chaosStatus){
     let sql="SELECT * FROM INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
     let rarityinfo = rarity[cardinfo.RARITY]
     let cardname=cardinfo.NAME
@@ -232,8 +260,10 @@ const addCardToInventory = async function(user,cardinfo){
             return [embed,attachement]
         }else{
             if (res[0].CARDLEVEL==rarityinfo.maxlv){
-                let sql="UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+rarityinfo.compensation+" WHERE ID='"+user.id+"'";
-                await db.update(sql,()=>{})
+                if(chaosStatus!="busted"){
+                    let sql="UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+rarityinfo.compensation+" WHERE ID='"+user.id+"'";
+                    await db.update(sql,()=>{})
+                }
                 sql = `UPDATE INVENTORY SET QUANTITY=QUANTITY+1 WHERE CARDID=${cardinfo.ID} and PLAYERID="${user.id}"`
                 await db.update(sql,()=>{})
                 let cardname=cardinfo.NAME
@@ -245,7 +275,7 @@ const addCardToInventory = async function(user,cardinfo){
                     .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL+" (max)":"")+
-                        "\n*Compensation : "+rarityinfo.compensation+" coquillage"+(rarityinfo.compensation==1?"*":"s*"))
+                        (chaosStatus=="busted"?"":"\n*Compensation : "+rarityinfo.compensation+" coquillage"+(rarityinfo.compensation==1?"*":"s*")))
                     .setImage("attachment://"+name)
 
                 return [embed,attachement]
