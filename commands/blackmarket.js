@@ -28,7 +28,16 @@ const data = new SlashCommandBuilder()
     .addSubcommand(subcommand =>
         subcommand
             .setName('liste')
-            .setDescription('Liste toutes les cartes, propriétaires, et prix du marché noir (admin seulement).'))
+            .setDescription('Liste toutes les cartes, propriétaires, et prix du marché noir (admin seulement)'))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('gacha')
+            .setDescription('Permet d\'acheter une carte aléatoire de rareté garantie au marché noir.')
+            .addStringOption(option => option.setName('rareté').setDescription('Rareté de la carte à acheter').setRequired(true).addChoices(
+                {name: '✰', value:'✰'},
+                {name: 'X', value:'X'},
+                {name: 'S', value:'S'}
+            )))
 
 
 module.exports.data=data;
@@ -39,6 +48,7 @@ const rarity=require("../rarity.json")
 const {MessageEmbed, MessageAttachment, MessageActionRow, MessageSelectMenu, TextChannel} = require("discord.js");
 const {toFileString} = require("./util");
 const permissions = require("./permissions");
+const gacha = require("./gacha");
 
 const sellCardBase=async function(user,cardname, price ,sql,interaction){
     await db.select(sql,async (card)=>{
@@ -315,3 +325,25 @@ const showWeekly=async function(channel){
 }
 
 module.exports.showWeekly=showWeekly
+
+const pricesBM={
+    "S" : 60,
+    "X" : 300,
+    "✰" : 600
+}
+
+const checkBMGacha = async function (interaction) {
+    let user = interaction.user;
+    let forcedRarity=interaction.options.get("rareté")
+    let sql = "SELECT * FROM PLAYERS WHERE ID='" + user.id + "'"
+    await db.select(sql,(res)=> {
+        if (res.length == 0) return interaction.editReply("Impossible de trouver le compte.")
+        let player = res[0];
+        let price=pricesBM[forcedRarity]
+        if (player.SEASNAILS < price) return interaction.editReply(`Il te faut ${price} coquillages pour tirer cette rareté !`)
+        player.price = price
+        gacha.playGacha(interaction, player, forcedRarity)
+    })
+}
+
+module.exports.checkBMGacha=checkBMGacha

@@ -227,7 +227,7 @@ client.on('interactionCreate', async interaction => {
             case "x1":
             case "x10":
                 await interaction.deferReply();
-                await gacha.playGacha(interaction)
+                await gacha.checkGacha(interaction)
                 break
         }
     }else if(interaction.commandName=="proba"){
