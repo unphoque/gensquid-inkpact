@@ -135,7 +135,7 @@ let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    if(Date.now()<Date.UTC(2023,8,8,6,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("Nan, j'ai pas envie. \n# ||BIENTÔT||")
+    if(Date.now()<Date.UTC(2023,10,1,7,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("# BOUH ! \n\nAvouez, vous avez eu peur.\n||Désolé, je dois préparer mon cadeau d'anniversaire !||")
 
     if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
 
