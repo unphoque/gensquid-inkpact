@@ -55,7 +55,7 @@ const showProbas = async function (interaction) {
             txt += "\nX garantie : " + (80 - res[0].PITYX) + " tir" + (res[0].PITYX != 99 ? "s" : "") +
                 "\nS garantie : " + (12 - res[0].PITYS) + " tir" + (res[0].PITYS != 9 ? "s" : "")
 
-            txt += `\nCarte de fidélité : ${res[0].LOYALTYCARD} points`
+            txt += `\nCarte de fidélité : ${res[0].LOYALTYCARD} point${(res[0].LOYALTYCARD>1?'s':'')}`
         }
         let embed = new MessageEmbed().setTitle("Probabilité par rareté").setDescription(txt);
         interaction.editReply({embeds: [embed]})
