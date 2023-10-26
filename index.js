@@ -72,22 +72,21 @@ client.on('ready', async () => {
         client.user.setPresence({status: "invisible"})
     }
 
-    client.user.setActivity(CONFIG.STATUS,{type:ActivityType.Custom})
+    // Fait crash le bot en boucle, ne pas utiliser !
+    //client.user.setActivity(CONFIG.STATUS,{type:ActivityType.Custom})
 
     // EXECUTE PERIODICALLY
     await schedule.gracefulShutdown()
 
-    if(Date.now()<Date.UTC(2023,10,1,7,0,0,0)){
-        schedule.scheduleJob('0 0 * * *', async () =>{
-            await db.update("UPDATE BLACKMARKET SET PRICE=PRICE-1 WHERE PRICE>1;")
-        })
+    schedule.scheduleJob('0 0 * * *', async () =>{
+        await db.update("UPDATE BLACKMARKET SET PRICE=PRICE-1 WHERE PRICE>1;")
+    })
 
-        schedule.scheduleJob('0 4 * * 1', async () => {
-            let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
-            let channel=await guild.channels.fetch('1007698058156453889')
-            blackmarket.showWeekly(channel)
-        })
-    }
+    schedule.scheduleJob('0 4 * * 1', async () => {
+        let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
+        let channel=await guild.channels.fetch('1007698058156453889')
+        blackmarket.showWeekly(channel)
+    })
 
 });
 
