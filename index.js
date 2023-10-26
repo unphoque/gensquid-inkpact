@@ -70,8 +70,9 @@ client.on('ready', async () => {
 
     if (CONFIG.IS_INVISIBLE) {
         client.user.setPresence({status: "invisible"})
-        client.user.setActivity(CONFIG.STATUS,{type:ActivityType.Custom})
     }
+
+    client.user.setActivity(CONFIG.STATUS,{type:ActivityType.Custom})
 
     // EXECUTE PERIODICALLY
     await schedule.gracefulShutdown()
