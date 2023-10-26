@@ -76,15 +76,18 @@ client.on('ready', async () => {
     // EXECUTE PERIODICALLY
     await schedule.gracefulShutdown()
 
-    schedule.scheduleJob('0 0 * * *', async () =>{
-        await db.update("UPDATE BLACKMARKET SET PRICE=PRICE-1 WHERE PRICE>1;")
-    })
+    if(Date.now()<Date.UTC(2023,10,1,7,0,0,0)){
+        schedule.scheduleJob('0 0 * * *', async () =>{
+            await db.update("UPDATE BLACKMARKET SET PRICE=PRICE-1 WHERE PRICE>1;")
+        })
 
-    schedule.scheduleJob('0 4 * * 1', async () => {
-        let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
-        let channel=await guild.channels.fetch('1007698058156453889')
-        blackmarket.showWeekly(channel)
-    })
+        schedule.scheduleJob('0 4 * * 1', async () => {
+            let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
+            let channel=await guild.channels.fetch('1007698058156453889')
+            blackmarket.showWeekly(channel)
+        })
+    }
+
 });
 
 
@@ -92,7 +95,7 @@ client.on('ready', async () => {
 //MESSAGE
 client.on("messageCreate", async message => {
 
-    if(Date.now()<Date.UTC(2023,3,8,3,0,0,0))return
+    if(Date.now()<Date.UTC(2023,10,1,7,0,0,0))return
 
     let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
     if (res.length==0)return
