@@ -87,7 +87,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
         player.price = 0
         chaosStatus = "free"
     } else if (!forcedRarity) {
-        let loyaltyRand = Math.floor(Math.random() * 100)
+        let loyaltyRand = Math.floor(Math.random() * 1000)
         if (loyaltyRand < player.LOYALTYCARD) {
             player.price = 0
             player.LOYALTYCARD = 0
@@ -97,7 +97,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 
     let nbDrawInit = interaction.options.getSubcommand().substring(1);
     let nbDraw;
-    (nbDrawInit=="g"?nbDraw=1:nbDraw=parseInt(nbDrawInit))
+    (nbDrawInit == "g" ? nbDraw = 1 : nbDraw = parseInt(nbDrawInit))
 
     for (let [r, i] of Object.entries(rarity)) {
         i.probaup = {}
@@ -122,7 +122,11 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
         for (let i = 0; i < nbDraw; i++) {
             let rarityDraw;
             let collecDraw;
-            if (secGuaranted) {
+            if(chaosStatus=="busted"){
+                forcedRarity="F"
+                rarityDraw="F"
+                collecDraw="FAKE"
+            } else if (secGuaranted) {
                 secGuaranted = false
                 fs.unlinkSync(__dirname + "/../sec.guaranted")
                 rarityDraw = "✰";
@@ -142,25 +146,24 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 player.PITYS = -1;
                 collecDraw = guarantedCollec
             } else {
-                let randRarity = Math.floor(Math.random() * 100)
-                let currentRarityProba = 0
-                for (const [r, i] of Object.entries(rarity)) {
-                    currentRarityProba += i.proba
-                    if (randRarity < currentRarityProba) {
-                        rarityDraw = r
-                        break
-                    }
-                }
-                if (rarityDraw == "X") {
-                    player.PITYX = -1
-                } else if (rarityDraw == "S") {
-                    player.PITYS = -1
-                }
 
-                if(chaosStatus=="busted"){
-                    rarityDraw="C"
-                }else if(forcedRarity){
-                    rarityDraw=forcedRarity
+                if (forcedRarity) {
+                    rarityDraw = forcedRarity
+                }else{
+                    let randRarity = Math.floor(Math.random() * 100)
+                    let currentRarityProba = 0
+                    for (const [r, i] of Object.entries(rarity)) {
+                        currentRarityProba += i.proba
+                        if (randRarity < currentRarityProba) {
+                            rarityDraw = r
+                            break
+                        }
+                    }
+                    if (rarityDraw == "X") {
+                        player.PITYX = -1
+                    } else if (rarityDraw == "S") {
+                        player.PITYS = -1
+                    }
                 }
 
                 let randCollec = Math.floor(Math.random() * 100)
@@ -169,7 +172,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 for (const [co, p] of Object.entries(collections)) {
                     if (p["PROBAUP"])
                         probaupColl = [co, p["PROBAUP"]]
-                    else
+                    else if (co != "FAKE")
                         otherColl.push(co)
                 }
                 if (randCollec < probaupColl[1]) {
@@ -182,6 +185,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             if (!forcedRarity) {
                 player.PITYX++
                 player.PITYS++
+            }
+            if(!chaosStatus){
+                player.LOYALTYCARD++
             }
 
             let randCard = Math.floor(Math.random() * 100)
@@ -238,7 +244,7 @@ const saveAndShowGacha = function (interaction, player, allCards, cards, chaosSt
             await interaction.followUp({embeds: [embeds[i]], files: [attachments[i]]})
         }
         if (chaosStatus) await interaction.followUp(chaosResponse[chaosStatus])
-        db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS-" + player.price + ",PITYX=" + player.PITYX + ",PITYS=" + player.PITYS + " WHERE ID='" + user.id + "'")
+        db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS- ${player.price} ,PITYX= ${player.PITYX} ,PITYS= ${player.PITYS}, LOYALTYCARD=${player.LOYALTYCARD} WHERE ID='${user.id}'`)
     });
 }
 
