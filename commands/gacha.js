@@ -44,8 +44,7 @@ const showProbas = async function (interaction) {
     });
     db.select("SELECT * FROM PLAYERS WHERE ID='" + interaction.user.id + "'", (res) => {
         for (let [r, i] of Object.entries(rarity)) {
-            if (r != "✰" && r != "C") txt += r + " - " + i.proba + "%\n"
-            if (r == "C") txt += r + " - 41%\n"
+            txt += r + " - " + i.proba + "%\n"
         }
         if (cardsUp) {
             for (const card of cardsUp) {
@@ -53,8 +52,10 @@ const showProbas = async function (interaction) {
             }
         }
         if (res.length == 1) {
-            txt += "\n\nX garantie : " + (80 - res[0].PITYX) + " tir" + (res[0].PITYX != 99 ? "s" : "") +
+            txt += "\nX garantie : " + (80 - res[0].PITYX) + " tir" + (res[0].PITYX != 99 ? "s" : "") +
                 "\nS garantie : " + (12 - res[0].PITYS) + " tir" + (res[0].PITYS != 9 ? "s" : "")
+
+            txt += `\nCarte de fidélité : ${res[0].LOYALTYCARD} points`
         }
         let embed = new MessageEmbed().setTitle("Probabilité par rareté").setDescription(txt);
         interaction.editReply({embeds: [embed]})
