@@ -97,7 +97,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 
     let nbDrawInit = interaction.options.getSubcommand().substring(1);
     let nbDraw;
-    (nbDrawInit == "g" ? nbDraw = 1 : nbDraw = parseInt(nbDrawInit))
+    (nbDrawInit == "acha" ? nbDraw = 1 : nbDraw = parseInt(nbDrawInit))
 
     for (let [r, i] of Object.entries(rarity)) {
         i.probaup = {}
@@ -218,7 +218,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 }
 
 const chaosResponse = {
-    "busted": "Et merci beaucoup pour tes coquillages !",
+    "busted": "",
     "free": "Au fait, ce tirage ne t'as rien coûté ! Cadeau !",
     "loyalty": "Grâce à ta carte de fidélité, ce tirage était gratuit !"
 }
@@ -243,7 +243,7 @@ const saveAndShowGacha = function (interaction, player, allCards, cards, chaosSt
         for (let i = 1; i < embeds.length; i++) {
             await interaction.followUp({embeds: [embeds[i]], files: [attachments[i]]})
         }
-        if (chaosStatus) await interaction.followUp(chaosResponse[chaosStatus])
+        if (chaosStatus && chaosResponse[chaosStatus]) await interaction.followUp(chaosResponse[chaosStatus])
         db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS- ${player.price} ,PITYX= ${player.PITYX} ,PITYS= ${player.PITYS}, LOYALTYCARD=${player.LOYALTYCARD} WHERE ID='${user.id}'`)
     });
 }

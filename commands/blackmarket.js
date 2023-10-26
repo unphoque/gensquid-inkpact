@@ -334,7 +334,7 @@ const pricesBM={
 
 const checkBMGacha = async function (interaction) {
     let user = interaction.user;
-    let forcedRarity=interaction.options.get("rareté")
+    let forcedRarity=interaction.options.get("rareté").value
     let sql = "SELECT * FROM PLAYERS WHERE ID='" + user.id + "'"
     await db.select(sql,(res)=> {
         if (res.length == 0) return interaction.editReply("Impossible de trouver le compte.")
