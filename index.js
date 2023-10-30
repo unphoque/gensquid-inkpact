@@ -90,12 +90,12 @@ client.on('ready', async () => {
 
 });
 
-
+const dateMaintenance=Date.UTC(2023,9,1,7,0,0,0)
 
 //MESSAGE
 client.on("messageCreate", async message => {
 
-    if(Date.now()<Date.UTC(2023,10,1,7,0,0,0))return
+    if(Date.now()<dateMaintenance)return
 
     let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
     if (res.length==0)return
@@ -138,7 +138,7 @@ let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    if(Date.now()<Date.UTC(2023,10,1,7,0,0,0) && !permissions.includes(interaction.user.id)) return await interaction.reply("# BOUH ! \n\nAvouez, vous avez eu peur.\n||Désolé, je dois préparer mon cadeau d'anniversaire !||")
+    if(Date.now()<dateMaintenance && !permissions.includes(interaction.user.id)) return await interaction.reply("# BOUH ! \n\nAvouez, vous avez eu peur.\n||Désolé, je dois préparer mon cadeau d'anniversaire !||")
 
     if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
 
