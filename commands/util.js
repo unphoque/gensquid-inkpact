@@ -16,7 +16,7 @@ const toFileString=function(txt){
 
 module.exports.toFileString=toFileString
 
-const setEmbedColor=function(rarity, embed:MessageEmbed){
+const setEmbedColor=function(rarity, embed){
     switch (rarity) {
         case "C":
         case "F":
