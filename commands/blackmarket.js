@@ -46,7 +46,7 @@ const db=require("../db")
 const rarity=require("../rarity.json")
 
 const {MessageEmbed, MessageAttachment, MessageActionRow, MessageSelectMenu, TextChannel} = require("discord.js");
-const {toFileString} = require("./util");
+const {toFileString, setEmbedColor} = require("./util");
 const permissions = require("./permissions");
 const gacha = require("./gacha");
 
@@ -187,7 +187,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                     "\n**"+cardinfo.RARITY+"**"+
                     (cardinfo.RARITY!="✰"?"\nNiveau 1":""))
                 .setImage("attachment://"+name)
-
+            embed=setEmbedColor(card[0].RARITY, embed)
             await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a acheté "+cardinfo.NAME+" !"})
         }else{
             let rarityinfo = rarity[cardinfo.RARITY]
@@ -213,7 +213,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+newlv:""))
                     .setImage("attachment://"+name)
-
+                embed=setEmbedColor(card[0].RARITY, embed)
                 await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a acheté "+cardinfo.NAME+" ! Elle passe au niveau "+newlv+" !"})
             }else{
                 let sql="UPDATE INVENTORY SET NBPOSSESSED="+(res[0].NBPOSSESSED+1)+" WHERE PLAYERID='"+user.id+"' AND CARDID='"+cardinfo.ID+"'"
@@ -230,7 +230,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
                     .setImage("attachment://"+name)
-
+                embed=setEmbedColor(card[0].RARITY, embed)
                 await interaction.editReply({embeds:[embed],files:[attachement],content:user.toString()+" a acheté "+cardinfo.NAME+" !"})
             }
         }

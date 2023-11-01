@@ -41,7 +41,7 @@ module.exports.data=data;
 
 const { MessageEmbed, MessageAttachment} = require('discord.js');
 const db=require("../db.js")
-const {toFileString} = require("./util")
+const {toFileString, setEmbedColor} = require("./util")
 const permissions = require("./permissions");
 const rarity=require("../rarity.json")
 
@@ -69,6 +69,7 @@ const showCardBase=async function(user,cardname, sql ,interaction){
                         .setImage("attachment://"+name)
                     //.setImage("http://127.0.0.1/")
 
+                    embed=setEmbedColor(card[0].RARITY, embed)
                     interaction.editReply({embeds:[embed],files:[attachement]})
                 }
                 else{
@@ -84,7 +85,7 @@ const showCardBase=async function(user,cardname, sql ,interaction){
                             "\n**"+card[0].RARITY+"**"+
                             "\nNon possédée")
                         .setImage("attachment://"+name)
-
+                    embed=setEmbedColor(card[0].RARITY, embed)
                     interaction.editReply({embeds:[embed],files:[attachement]})
                 }
             });

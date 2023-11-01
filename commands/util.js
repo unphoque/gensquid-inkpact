@@ -1,3 +1,5 @@
+const {MessageEmbed}=require("discord.js")
+
 const toFileString=function(txt){
     txt=txt.replaceAll(" ","_")
     txt=txt.replaceAll("(","").replaceAll(")","")
@@ -13,3 +15,29 @@ const toFileString=function(txt){
 }
 
 module.exports.toFileString=toFileString
+
+const setEmbedColor=function(rarity, embed:MessageEmbed){
+    switch (rarity) {
+        case "C":
+        case "F":
+            embed.setColor(0x000000)
+            break
+        case "B":
+            embed.setColor(0xCD7F32)
+            break
+        case "A":
+            embed.setColor(0xC0C0C0)
+            break
+        case "S":
+            embed.setColor(0xFFD700)
+            break
+        case "X":
+        case "✰":
+            embed.setColor(0xE5E4E2)
+            break
+    }
+
+    return embed
+}
+
+module.exports.setEmbedColor=setEmbedColor

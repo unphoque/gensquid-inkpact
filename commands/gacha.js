@@ -35,7 +35,7 @@ db.select("SELECT * FROM COLLECTIONS WHERE PROBAUP > 0 ORDER BY PROBAUP DESC LIM
 });
 
 const {MessageEmbed, MessageAttachment} = require("discord.js");
-const {toFileString} = require("./util");
+const {toFileString, setEmbedColor} = require("./util");
 
 const showProbas = async function (interaction) {
     let txt = "";
@@ -272,7 +272,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                     "\n**" + cardinfo.RARITY + "**" +
                     (cardinfo.RARITY != "✰" ? "\nNiveau 1 " + (cardinfo.RARITY == "C" ? "(max)" : "0/" + rarityinfo.tonextlv) : ""))
                 .setImage("attachment://" + name)
-
+            embed=setEmbedColor(card[0].RARITY, embed)
             return [embed, attachement]
         } else {
             if (res[0].CARDLEVEL == rarityinfo.maxlv) {
@@ -298,7 +298,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " (max)" : "") +
                         (chaosStatus == "busted" ? "" : "\n*Compensation : " + rarityinfo.compensation + " coquillage" + (rarityinfo.compensation == 1 ? "*" : "s*")))
                     .setImage("attachment://" + name)
-
+                embed=setEmbedColor(card[0].RARITY, embed)
                 return [embed, attachement]
             } else if ((res[0].NBPOSSESSED + 1) == rarityinfo.tonextlv) {
                 let newlv = res[0].CARDLEVEL + 1
@@ -317,7 +317,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + newlv + (newlv == rarityinfo.maxlv ? " (max)" : " 0/" + rarityinfo.tonextlv) : ""))
                     .setImage("attachment://" + name)
-
+                embed=setEmbedColor(card[0].RARITY, embed)
                 return [embed, attachement]
             } else {
                 let sql = "UPDATE INVENTORY SET NBPOSSESSED=NBPOSSESSED+1, QUANTITY=QUANTITY+1 WHERE PLAYERID='" + user.id + "' AND CARDID='" + cardinfo.ID + "'"
@@ -334,7 +334,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " " + (res[0].NBPOSSESSED + 1) + "/" + rarityinfo.tonextlv : ""))
                     .setImage("attachment://" + name)
-
+                embed=setEmbedColor(card[0].RARITY, embed)
                 return [embed, attachement]
             }
         }
