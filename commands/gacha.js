@@ -86,13 +86,13 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
     let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0]})
 
     let chaosStatus = ""
-    let chaosRand = Math.floor(Math.random() * 100000)
-    if (chaosRand < 1000) {
+    let chaosRand = Math.floor(Math.random() * 10000)
+    if (chaosRand < 100) {
         player.price = 0
         chaosStatus = "free"
-    } else if (chaosRand < 1000+probaF) {
+    } else if (chaosRand < 100+probaF) {
         chaosStatus = "busted"
-        db.update(`UPDATE GLOBAL SET PROBAF=1000`,()=>{})
+        db.update(`UPDATE GLOBAL SET PROBAF=100`,()=>{})
     } else if (!forcedRarity) {
         let loyaltyRand = Math.floor(Math.random() * 1000)
         if (loyaltyRand < player.LOYALTYCARD) {
