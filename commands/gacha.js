@@ -42,7 +42,7 @@ const showProbas = async function (interaction) {
     let cardsUp = await db.select("SELECT NAME,PROBAUP FROM CARDS WHERE PROBAUP NOT NULL", (res) => {
         return res
     });
-    db.select("SELECT * FROM PLAYERS WHERE ID='" + interaction.user.id + "'", (res) => {
+    db.select("SELECT * FROM PLAYERS WHERE ID='" + interaction.user.id + "'", async (res) => {
         for (let [r, i] of Object.entries(rarity)) {
             txt += r + " - " + i.proba + "%\n"
         }
@@ -56,6 +56,9 @@ const showProbas = async function (interaction) {
                 "\nS garantie : " + (12 - res[0].PITYS) + " tir" + (res[0].PITYS != 9 ? "s" : "")
 
             txt += `\n\nCarte de fidélité : ${res[0].LOYALTYCARD} point${(res[0].LOYALTYCARD>1?'s':'')}`
+
+            let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0]})
+            txt+=`\nProbabilité de F : ${probaF/1000}%`
         }
         let embed = new MessageEmbed().setTitle("Probabilité par rareté").setDescription(txt);
         interaction.editReply({embeds: [embed]})
@@ -80,13 +83,16 @@ const checkGacha = async function (interaction) {
 }
 
 const playGacha = async function (interaction, player, forcedRarity = "") {
+    let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0]})
+
     let chaosStatus = ""
-    let chaosRand = Math.floor(Math.random() * 100)
-    if (chaosRand == 0) {
-        chaosStatus = "busted"
-    } else if (chaosRand == 1) {
+    let chaosRand = Math.floor(Math.random() * 100000)
+    if (chaosRand < 1000) {
         player.price = 0
         chaosStatus = "free"
+    } else if (chaosRand < 1000+probaF) {
+        chaosStatus = "busted"
+        db.update(`UPDATE GLOBAL SET PROBAF=1000`,()=>{})
     } else if (!forcedRarity) {
         let loyaltyRand = Math.floor(Math.random() * 1000)
         if (loyaltyRand < player.LOYALTYCARD) {
@@ -99,6 +105,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
     let nbDrawInit = interaction.options.getSubcommand().substring(1);
     let nbDraw;
     (nbDrawInit == "acha" ? nbDraw = 1 : nbDraw = parseInt(nbDrawInit))
+
+    if(chaosStatus!="busted")
+        db.update(`UPDATE GLOBAL SET PROBAF=PROBAF+${nbDraw*4}`,()=>{})
 
     for (let [r, i] of Object.entries(rarity)) {
         i.probaup = {}
