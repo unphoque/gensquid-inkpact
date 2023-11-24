@@ -57,8 +57,8 @@ const showProbas = async function (interaction) {
 
             txt += `\n\nCarte de fidélité : ${res[0].LOYALTYCARD} point${(res[0].LOYALTYCARD>1?'s':'')}`
 
-            let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0]})
-            txt+=`\nProbabilité de F : ${probaF/1000}%`
+            let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0].PROBAF})
+            txt+=`\nProbabilité de F : ${probaF/100}%`
         }
         let embed = new MessageEmbed().setTitle("Probabilité par rareté").setDescription(txt);
         interaction.editReply({embeds: [embed]})
@@ -83,7 +83,7 @@ const checkGacha = async function (interaction) {
 }
 
 const playGacha = async function (interaction, player, forcedRarity = "") {
-    let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0]})
+    let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0].PROBAF})
 
     let chaosStatus = ""
     let chaosRand = Math.floor(Math.random() * 10000)
