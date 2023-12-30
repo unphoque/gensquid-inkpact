@@ -90,7 +90,8 @@ client.on('ready', async () => {
 
 });
 
-const dateMaintenance=Date.UTC(2023,9,1,7,0,0,0)
+const dateMaintenance=Date.UTC(2024,0,1,6,0,0,0)
+const msgMaintenance="Je prends une petite pause pour le réveillon ! On se revoit l'année prochaine, bonne fin d'année à tous !"
 
 //MESSAGE
 client.on("messageCreate", async message => {
@@ -138,7 +139,7 @@ let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    if(Date.now()<dateMaintenance && !permissions.includes(interaction.user.id)) return await interaction.reply("# BOUH ! \n\nAvouez, vous avez eu peur.\n||Désolé, je dois préparer mon cadeau d'anniversaire !||")
+    if(Date.now()<dateMaintenance && !permissions.includes(interaction.user.id)) return await interaction.reply(msgMaintenance)
 
     if (interaction.commandName === 'poinf')return await interaction.reply("miu miu")
 
