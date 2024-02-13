@@ -11,6 +11,7 @@ const toFileString=function(txt){
     txt=txt.replaceAll("ç","c")
     txt=txt.replaceAll("é","e").replaceAll("è","e").replaceAll("ê","e")
     txt=txt.replaceAll("ï","i").replaceAll("î","i")
+    txt=txt.replaceAll("ö","o").replaceAll("ô","o")
 
     return txt
 }
