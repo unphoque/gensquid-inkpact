@@ -90,8 +90,8 @@ client.on('ready', async () => {
 
 });
 
-const dateMaintenance=Date.UTC(2024,0,1,6,0,0,0)
-const msgMaintenance="Je prends une petite pause pour le réveillon ! On se revoit l'année prochaine, bonne fin d'année à tous !"
+const dateMaintenance=Date.UTC(2024,2,31,22,0,0,0)
+const msgMaintenance="Rendez-vous à minuit :)"
 
 //MESSAGE
 client.on("messageCreate", async message => {
@@ -131,8 +131,8 @@ const reloadAtMidnight=function(){
 };
 
 let today = new Date();
-let tommorow = new Date(today.getFullYear(),today.getMonth(),today.getDate()+1);
-let timeToMidnight = (tommorow-today);
+let tomorrow = new Date(today.getFullYear(),today.getMonth(),today.getDate()+1);
+let timeToMidnight = (tomorrow-today);
 let timer = setTimeout(reloadAtMidnight,timeToMidnight);
 
 //COMMANDS
