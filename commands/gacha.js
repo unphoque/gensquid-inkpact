@@ -67,7 +67,7 @@ const showProbas = async function (interaction) {
 
 module.exports.showProbas = showProbas
 
-const basePrice = 20;
+const basePrice = 1;
 
 const checkGacha = async function (interaction) {
     let user = interaction.user;
@@ -92,7 +92,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
         chaosStatus = "free"
     } else if (chaosRand < 100+probaF) {
         chaosStatus = "busted"
-        db.update(`UPDATE GLOBAL SET PROBAF=100`,()=>{})
+        db.update(`UPDATE GLOBAL SET PROBAF=9900`,()=>{})
     } else if (!forcedRarity) {
         let loyaltyRand = Math.floor(Math.random() * 1000)
         if (loyaltyRand < player.LOYALTYCARD) {
