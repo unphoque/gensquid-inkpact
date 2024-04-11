@@ -184,7 +184,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             let attachement = new MessageAttachment(file,name)
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
-                .setDescription(cardtitle+
+                .setDescription(`*${cardtitle}*`+
                     "\n\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                     "\n**"+cardinfo.RARITY+"**"+
                     (cardinfo.RARITY!="✰"?"\nNiveau 1":""))
@@ -211,7 +211,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription(cardtitle+
+                    .setDescription(`*${cardtitle}*`+
                         "\n\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+newlv:""))
@@ -229,7 +229,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription(cardtitle+
+                    .setDescription(`*${cardtitle}*`+
                         "\n\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))

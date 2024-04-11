@@ -71,7 +71,7 @@ const showCardBase=async function(user,cardname, sql ,interaction){
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription(cardtitle+
+                        .setDescription(`*${cardtitle}*`+
                             "\n\n__**"+res[0].COLLECNAME+"**__ - n° "+cardnumber+"/"+res[0].MAX+
                             "\n**"+card[0].RARITY+"**"+
                             (card[0].RARITY!="✰"?"\nNiveau "+level:""))
@@ -90,7 +90,7 @@ const showCardBase=async function(user,cardname, sql ,interaction){
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription(cardtitle+
+                        .setDescription(`*${cardtitle}*`+
                             "\n\n__**"+collection.NAME+"**__ - n° "+cardnumber+"/"+collection.MAX+
                             "\n**"+card[0].RARITY+"**"+
                             "\nNon possédée")

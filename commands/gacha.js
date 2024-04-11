@@ -277,7 +277,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
             let attachement = new MessageAttachment(file, name)
             let embed = new MessageEmbed()
                 .setTitle(cardinfo.NAME)
-                .setDescription(cardtitle+
+                .setDescription(`*${cardtitle}*`+
                     "\n\n**NOUVELLE CARTE !**" +
                     "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                     "\n**" + cardinfo.RARITY + "**" +
@@ -304,7 +304,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription(cardtitle+
+                    .setDescription(`*${cardtitle}*`+
                         "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " (max)" : "") +
@@ -324,7 +324,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription(cardtitle+
+                    .setDescription(`*${cardtitle}*`+
                         "\n\n**NIVEAU SUP !**" +
                         "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                         "\n**" + cardinfo.RARITY + "**" +
@@ -343,7 +343,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription(cardtitle+
+                    .setDescription(`*${cardtitle}*`+
                         "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " " + (res[0].NBPOSSESSED + 1) + "/" + rarityinfo.tonextlv : ""))
