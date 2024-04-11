@@ -198,6 +198,10 @@ client.on('interactionCreate', async interaction => {
                 await interaction.deferReply();
                 await carte.giveCard(interaction)
                 break
+            case "titre":
+                await interaction.deferReply({ephemeral:true});
+                await carte.changeTitle(interaction)
+                break
         }
     }else if(interaction.commandName=="blackmarket"){
         switch (interaction.options.getSubcommand()){

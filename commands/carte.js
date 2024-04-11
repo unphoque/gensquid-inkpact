@@ -30,6 +30,13 @@ const data = new SlashCommandBuilder()
             .setDescription('Donne une carte à un joueur (admin seulement)')
             .addUserOption(option => option.setName('joueur').setDescription('Le joueur').setRequired(true))
             .addStringOption(option => option.setName('carte').setDescription('La carte').setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('titre')
+            .setDescription('Change le titre d\'une carte (admin seulement)')
+            .addStringOption(option => option.setName('collec').setDescription('Le préfixe de la collection (SO, PS, FAKE...)').setRequired(true))
+            .addStringOption(option => option.setName('num').setDescription('Le n° de la carte dans la collec (il faut inclure le 0 si 08 par ex)').setRequired(true))
+            .addStringOption(option => option.setName('titre').setDescription('Le nouveau titre').setRequired(true)))
     /*.addSubcommand(subcommand =>
         subcommand
             .setName('remove')
@@ -251,3 +258,25 @@ const giveCard=async function(interaction){
 };
 
 module.exports.giveCard=giveCard
+
+const changeTitle=async function(interaction){
+    if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
+
+    let collec=interaction.options.getString("collec")
+    let num=interaction.options.getString("num")
+    let titre=interaction.options.getString("titre")
+    let sql=`SELECT * FROM CARDS WHERE COLLECTION="${collec}" AND NUMBER="${num}"`
+    await db.select(sql,async (res)=>{
+        if (res.length==1){
+            let sql = `UPDATE CARDS SET TITLE="${titre}" WHERE COLLECTION="${collec}" AND NUMBER="${num}"`
+            let cardname=res[0].NAME
+            await db.update(sql, async()=>{
+                return await interaction.editReply(`Le nouveau titre de la carte ${cardname} est ${titre}`)
+            })
+        }else{
+            return await interaction.editReply("La carte n'existe pas.")
+        }
+    });
+};
+
+module.exports.changeTitle=changeTitle
