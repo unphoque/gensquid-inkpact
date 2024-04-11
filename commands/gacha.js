@@ -262,6 +262,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
     let sql = "SELECT * FROM INVENTORY WHERE PLAYERID='" + user.id + "' AND CARDID='" + cardinfo.ID + "'"
     let rarityinfo = rarity[cardinfo.RARITY]
     let cardname = cardinfo.NAME
+    let cardtitle = cardinfo.TITLE
     let cardcollec = cardinfo.COLLECTION
     let cardid = cardinfo.ID
     let cardnumber = cardinfo.NUMBER
@@ -276,7 +277,8 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
             let attachement = new MessageAttachment(file, name)
             let embed = new MessageEmbed()
                 .setTitle(cardinfo.NAME)
-                .setDescription("**NOUVELLE CARTE !**" +
+                .setDescription(cardtitle+
+                    "\n\n**NOUVELLE CARTE !**" +
                     "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                     "\n**" + cardinfo.RARITY + "**" +
                     (cardinfo.RARITY != "✰" ? "\nNiveau 1 " + (cardinfo.RARITY == "C" ? "(max)" : "0/" + rarityinfo.tonextlv) : ""))
@@ -302,7 +304,8 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
+                    .setDescription(cardtitle+
+                        "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " (max)" : "") +
                         (chaosStatus == "busted" ? "" : "\n*Compensation : " + rarityinfo.compensation + " coquillage" + (rarityinfo.compensation == 1 ? "*" : "s*")))
@@ -321,7 +324,8 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("**NIVEAU SUP !**" +
+                    .setDescription(cardtitle+
+                        "\n\n**NIVEAU SUP !**" +
                         "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + newlv + (newlv == rarityinfo.maxlv ? " (max)" : " 0/" + rarityinfo.tonextlv) : ""))
@@ -339,7 +343,8 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
+                    .setDescription(cardtitle+
+                        "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " " + (res[0].NBPOSSESSED + 1) + "/" + rarityinfo.tonextlv : ""))
                     .setImage("attachment://" + name)

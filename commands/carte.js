@@ -53,6 +53,7 @@ const showCardBase=async function(user,cardname, sql ,interaction){
             let cardid=card[0].ID
             let cardcollec=card[0].COLLECTION
             let cardname=card[0].NAME
+            let cardtitle=card[0].TITLE
             let cardnumber = card[0].NUMBER
             let sql="SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co, CARDS, INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardid+" AND ID="+cardid+" AND SHORT=COLLECTION";
             await db.select(sql,async (res)=>{
@@ -63,7 +64,8 @@ const showCardBase=async function(user,cardname, sql ,interaction){
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription("__**"+res[0].COLLECNAME+"**__ - n° "+cardnumber+"/"+res[0].MAX+
+                        .setDescription(cardtitle+
+                            "\n\n__**"+res[0].COLLECNAME+"**__ - n° "+cardnumber+"/"+res[0].MAX+
                             "\n**"+card[0].RARITY+"**"+
                             (card[0].RARITY!="✰"?"\nNiveau "+level:""))
                         .setImage("attachment://"+name)
@@ -81,7 +83,8 @@ const showCardBase=async function(user,cardname, sql ,interaction){
                     let attachement = new MessageAttachment(file,name)
                     let embed=new MessageEmbed()
                         .setTitle(cardname)
-                        .setDescription("__**"+collection.NAME+"**__ - n° "+cardnumber+"/"+collection.MAX+
+                        .setDescription(cardtitle+
+                            "\n\n__**"+collection.NAME+"**__ - n° "+cardnumber+"/"+collection.MAX+
                             "\n**"+card[0].RARITY+"**"+
                             "\nNon possédée")
                         .setImage("attachment://"+name)
