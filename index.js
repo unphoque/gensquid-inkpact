@@ -92,7 +92,8 @@ client.on('ready', async () => {
                 let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
                 let channel=await guild.channels.fetch('502498744026005505')
                 for (const player in res) {
-                    channel.send(`Bon anniversaire <@${res[player].ID}> ! Et voici 200 coquillages en cadeau !`)
+                    channel.send(`Bon anniversaire <@${res[player].ID}> ! Et voici 200 coquillages en cadeau !
+                    \nhttps://tenor.com/view/splatoon-gif-22980580`)
                     await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+200 WHERE ID='${res[player].ID}'`)
                 }
             }
