@@ -82,6 +82,23 @@ client.on('ready', async () => {
         await db.update("UPDATE BLACKMARKET SET PRICE=PRICE-1 WHERE PRICE>1;")
     })
 
+    schedule.scheduleJob('0 6 * * *', async () =>{
+        let date=new Date()
+        let jour=date.getDate()
+        let mois=date.getMonth()+1
+        let anniv=`${jour}/${mois}`
+        await db.select(`SELECT * FROM PLAYERS WHERE ANNIV='${anniv}';`,async (res)=>{
+            if(res.length>0){
+                let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
+                let channel=await guild.channels.fetch('502498744026005505')
+                for (const player in res) {
+                    channel.send(`Bon anniversaire <@${res[player].ID}> ! Et voici 200 coquillages en cadeau !`)
+                    await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+200 WHERE ID='${res[player].ID}'`)
+                }
+            }
+        })
+    })
+
     schedule.scheduleJob('0 4 * * 1', async () => {
         let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
         let channel=await guild.channels.fetch('1007698058156453889')
@@ -181,6 +198,10 @@ client.on('interactionCreate', async interaction => {
             case "emoji":
                 await interaction.deferReply({ephemeral:true});
                 await joueur.updateEmoji(interaction)
+                break
+            case "anniv":
+                await interaction.deferReply({ephemeral:true});
+                await joueur.updateAnniv(interaction)
                 break
         }
     }else if(interaction.commandName=="carte"){

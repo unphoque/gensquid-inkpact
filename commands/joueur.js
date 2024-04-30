@@ -26,6 +26,12 @@ const data = new SlashCommandBuilder()
             .setName('emoji')
             .setDescription('Choisir un emoji custom pour la réaction du bot, parmi ceux de Discord et du serveur Squid Order.')
             .addStringOption(option => option.setName('emoji').setDescription('Cliquez sur le bouton emoji dans la barre de chat et sélectionnez votre emote.').setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('anniv')
+            .setDescription('Donnez votre date d\'anniversaire pour recevoir un petit cadeau le jour J !')
+            .addIntegerOption(option => option.setName('jour').setDescription('N° du jour').setRequired(true))
+            .addIntegerOption(option => option.setName('mois').setDescription('N° du mois').setRequired(true)))
 
 
 module.exports.data=data
@@ -83,3 +89,15 @@ const updateEmoji=async function (interaction) {
 }
 
 module.exports.updateEmoji=updateEmoji
+
+const updateAnniv=async function (interaction) {
+    let user = interaction.user
+    let jour = interaction.options.getInteger("jour")
+    let mois = interaction.options.getInteger("mois")
+    let date=`${jour}/${mois}`
+    let sql = `UPDATE PLAYERS SET ANNIV='${date}' WHERE ID='${user.id}'`
+    await db.update(sql,()=>{})
+    await interaction.editReply(`Votre anniversaire a été mis pour le ${jour}/${mois}`)
+}
+
+module.exports.updateAnniv=updateAnniv
