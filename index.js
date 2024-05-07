@@ -51,6 +51,15 @@ db.select("SELECT * FROM RARITY",(res) => {
 
 });
 
+const collections=require("./collections.json");
+db.select("SELECT * FROM COLLECTIONS",(res) => {
+    for (const c of res) {
+        collections[c.NAME].choice = {name:c.SHORT, value:c.SHORT};
+    }
+    fs.writeFile("./collections.json", JSON.stringify(collections),"utf8",()=>console.log("Rarities updated"));
+
+});
+
 process.on('SIGINT', function () {
     schedule.gracefulShutdown()
         .then(() => process.exit(0))

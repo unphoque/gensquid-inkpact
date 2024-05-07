@@ -1,5 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {MessageActionRow, MessageSelectMenu} = require("discord.js")
+const collections=require("../collections.json");
+
+const preLoadCollections=function(){
+    let choices=[]
+    for (const c in collections) {
+        choices.push(collections[c].choice)
+    }
+    return choices
+}
 
 const data = new SlashCommandBuilder()
     .setName('carte')
@@ -14,11 +23,7 @@ const data = new SlashCommandBuilder()
             .setName('liste')
             .setDescription('Affiche la liste de vos cartes et leur niveau !')
             .addStringOption(option => option.setName('collection').setDescription('Collection à afficher')
-                .addChoices(
-                    {name:"SO",value:"SO"},
-                    {name:"SL",value:"SL"},
-                    {name:"SONV",value:"SONV"},
-                    {name:"PE",value:"PE"})))
+                .addChoices.apply(option,preLoadCollections())))
     .addSubcommand(subcommand =>
         subcommand
             .setName('joueur')
