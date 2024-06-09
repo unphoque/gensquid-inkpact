@@ -114,3 +114,5 @@ dist
 
 img/
 /changelog.txt
+/ACHIEVEMENTS.csv
+/secretsql.json
