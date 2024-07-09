@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {MessageActionRow, MessageSelectMenu} = require("discord.js")
 const collections=require("../collections.json");
+const achievement=require("./achievement")
 
 const preLoadCollections=function(){
     let choices=[]
@@ -56,6 +57,7 @@ const db=require("../db.js")
 const {toFileString, setEmbedColor} = require("./util")
 const permissions = require("./permissions");
 const rarity=require("../rarity.json")
+const {checkAchievementsToGive} = require("./achievement");
 
 const showCardBase=async function(user,cardname, sql ,interaction){
     await db.select(sql,async (card)=>{
@@ -178,7 +180,6 @@ const addCardToInventory = async function(user,cardinfo,interaction){
     let sql="SELECT * FROM INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardinfo.ID
     let cardname=cardinfo.NAME
     let cardcollec=cardinfo.COLLECTION
-    let cardid=cardinfo.ID
     let cardnumber=cardinfo.NUMBER
     await db.select(sql,async (res)=>{
         if (res.length==0){
@@ -244,6 +245,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             }
         }
     })
+    await achievement.checkAchievementsToGive(interaction.guild,interaction.user,["LEVEL","RARITY","MULTIPLE","SEASNAILS","CARDS",`COLLEC${cardcollec}`])
 }
 
 const giveCard=async function(interaction){

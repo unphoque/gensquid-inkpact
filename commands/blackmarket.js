@@ -49,6 +49,7 @@ const {MessageEmbed, MessageAttachment, MessageActionRow, MessageSelectMenu, Tex
 const {toFileString, setEmbedColor} = require("./util");
 const permissions = require("./permissions");
 const gacha = require("./gacha");
+const achievement = require("./achievement");
 
 const sellCardBase=async function(user,cardname, price ,sql,interaction){
     await db.select(sql,async (card)=>{
@@ -281,14 +282,17 @@ const buyCard=async function(interaction){
 
        let effectiveGain=res[0].PRICE-rarity[res[0].RARITY].compensation
 
-       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${(effectiveGain>0?effectiveGain:0)} WHERE ID="${res[0].OWNERID}"`,()=>{});
-       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS-${res[0].PRICE} WHERE ID="${user.id}"`,()=>{});
+       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${(effectiveGain>0?effectiveGain:0)}, TOTALBM=TOTALBM+1 WHERE ID="${res[0].OWNERID}"`,()=>{});
+       await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS-${res[0].PRICE}, TOTALBM=TOTALBM+1 WHERE ID="${user.id}"`,()=>{});
        await delCard(ownerId, cardId);
        let sql=`SELECT * FROM CARDS WHERE ID=${cardId}`;
        await db.select(sql, async (res)=>{
            let cardinfo=res[0]
            await addCardToInventory(user, cardinfo,interaction)
+           if(cardinfo.RARITY=="F")await achievement.checkAchievementsToGive(interaction.guild, user,["BMF"])
        })
+        await achievement.checkAchievementsToGive(interaction.guild, ownerId,["BM"])
+        await achievement.checkAchievementsToGive(interaction.guild, user,["BM"])
     });
 }
 
@@ -340,13 +344,14 @@ const checkBMGacha = async function (interaction) {
     let user = interaction.user;
     let forcedRarity=interaction.options.get("rareté").value
     let sql = "SELECT * FROM PLAYERS WHERE ID='" + user.id + "'"
-    await db.select(sql,(res)=> {
+    await db.select(sql,async (res)=> {
         if (res.length == 0) return interaction.editReply("Impossible de trouver le compte.")
         let player = res[0];
         let price=pricesBM[forcedRarity]
         if (player.SEASNAILS < price) return interaction.editReply(`Il te faut ${price} coquillages pour tirer cette rareté !`)
         player.price = price
-        gacha.playGacha(interaction, player, forcedRarity)
+        await db.update(`UPDATE PLAYERS SET TOTALBM=TOTALBM+1 WHERE ID="${user.id}"`)
+        await gacha.playGacha(interaction, player, forcedRarity)
     })
 }
 

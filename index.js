@@ -70,9 +70,13 @@ const joueur=require("./commands/joueur")
 const carte=require("./commands/carte")
 const gacha=require("./commands/gacha")
 const proba=require("./commands/proba")
-const echange=require("./commands/echange")
-const execute=require("./commands/execute")
+//const echange=require("./commands/echange")
+//const execute=require("./commands/execute")
 const blackmarket=require("./commands/blackmarket")
+const achievement=require("./commands/achievement")
+
+const dateMaintenance=Date.UTC(2024,2,31,22,0,0,0)
+const msgMaintenance="Rendez-vous à minuit :)"
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -89,6 +93,12 @@ client.on('ready', async () => {
 
     schedule.scheduleJob('0 0 * * *', async () =>{
         await db.update("UPDATE BLACKMARKET SET PRICE=PRICE-1 WHERE PRICE>1;")
+
+        if(Date.now()<dateMaintenance){
+            let d=new Date().getTime()
+            await db.update(`UPDATE PLAYERS SET LASTMESSAGE=${d}`)
+        }
+
     })
 
     schedule.scheduleJob('0 6 * * *', async () =>{
@@ -117,9 +127,6 @@ client.on('ready', async () => {
 
 });
 
-const dateMaintenance=Date.UTC(2024,2,31,22,0,0,0)
-const msgMaintenance="Rendez-vous à minuit :)"
-
 //MESSAGE
 client.on("messageCreate", async message => {
 
@@ -131,11 +138,22 @@ client.on("messageCreate", async message => {
         let d=new Date().getTime()
         if (res[0].LASTMESSAGE<d-3600000 && res[0].TOTALTODAY<5){
             try{
+                let achList=[]
                 let rand=Math.floor(Math.random()*100)
                 let added=4
                 if (rand<5)added=20
-                if (rand==0)added=200
+                if (rand==0){
+                    added=200
+                    achList.push("RECOMP200")
+                }
                 await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+added+", TOTALTODAY=TOTALTODAY+1, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
+
+                if (res[0].LASTMESSAGE<d-172800000)await db.update(`UPDATE PLAYERS SET CONSECUTIVEDAYS=1 WHERE ID="${message.author.id}"`)
+                else if(res[0].TOTALTODAY==0){
+                    await db.update(`UPDATE PLAYERS SET CONSECUTIVEDAYS=CONSECUTIVEDAYS+1 WHERE ID="${message.author.id}"`)
+
+                    achList.push("RECOMP")
+                }
 
                 if(res[0].NOTIFICATIONS){
                     try{
@@ -143,6 +161,11 @@ client.on("messageCreate", async message => {
                     }catch (e) {
                         await message.react("🐚")
                     }
+                }
+
+                if(achList) {
+                    let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
+                    await achievement.checkAchievementsToGive(guild, message.author, achList)
                 }
 
             }catch (e) {
@@ -284,13 +307,29 @@ client.on('interactionCreate', async interaction => {
                 await proba.resetProba(interaction)
                 break
         }
-    }else if(interaction.commandName=="échange"){
+    }else if(interaction.commandName=="achievement"){
+        switch (interaction.options.getSubcommand()) {
+            case "liste":
+                await interaction.deferReply();
+                await achievement.showAchievementList(interaction)
+                break
+            case "info":
+                await interaction.deferReply();
+                await achievement.showAchievementDetail(interaction)
+                break
+            case "give":
+                await interaction.deferReply();
+                await achievement.giveAchievement(interaction)
+                break
+        }
+    }
+    /*else if(interaction.commandName=="échange"){
         await interaction.deferReply({ephemeral:true});
         await echange.createExchange(interaction)
     }else if(interaction.commandName=="execute"){
         await interaction.deferReply({ephemeral:true});
         await execute.ex(interaction);
-    }
+    }*/
 });
 
 //BUTTONS

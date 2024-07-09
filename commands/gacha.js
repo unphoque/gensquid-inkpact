@@ -1,5 +1,6 @@
 const {SlashCommandBuilder} = require('@discordjs/builders');
 const fs = require("fs")
+const achievement=require("./achievement")
 
 let xGuaranted = fs.existsSync(__dirname + "/../X.guaranted")
 let secGuaranted = fs.existsSync(__dirname + "/../sec.guaranted")
@@ -83,6 +84,12 @@ const checkGacha = async function (interaction) {
 }
 
 const playGacha = async function (interaction, player, forcedRarity = "") {
+    let achToCheck=[]
+
+    let nbDrawInit = interaction.options.getSubcommand().substring(1);
+    let nbDraw;
+    (nbDrawInit == "acha" ? nbDraw = 1 : nbDraw = parseInt(nbDrawInit))
+
     let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0].PROBAF})
 
     let chaosStatus = ""
@@ -93,18 +100,21 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
     } else if (chaosRand < 100+probaF) {
         chaosStatus = "busted"
         db.update(`UPDATE GLOBAL SET PROBAF=100`,()=>{})
+        achToCheck.push("RARITYF")
+        if(nbDraw==10)achToCheck.push("RARITYF10")
+        if(forcedRarity){
+            achToCheck.push("BMF")
+            if(player.price==600)achToCheck.push("BM600F")
+        }
     } else if (!forcedRarity) {
         let loyaltyRand = Math.floor(Math.random() * 1000)
         if (loyaltyRand < player.LOYALTYCARD) {
             player.price = 0
             player.LOYALTYCARD = 0
             chaosStatus = "loyalty"
+            achToCheck.push("FIDELITE")
         }
     }
-
-    let nbDrawInit = interaction.options.getSubcommand().substring(1);
-    let nbDraw;
-    (nbDrawInit == "acha" ? nbDraw = 1 : nbDraw = parseInt(nbDrawInit))
 
     if(chaosStatus!="busted")
         db.update(`UPDATE GLOBAL SET PROBAF=PROBAF+${nbDraw*4}`,()=>{})
@@ -113,7 +123,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
         i.probaup = {}
         i.cards = []
     }
-    db.select("SELECT co.NAME as COLLECNAME, co.PROBAUP as cpu, * FROM COLLECTIONS co,CARDS ca where ca.COLLECTION=co.SHORT", (cardsDB) => {
+    db.select("SELECT co.NAME as COLLECNAME, co.PROBAUP as cpu, * FROM COLLECTIONS co,CARDS ca where ca.COLLECTION=co.SHORT", async (cardsDB) => {
         let cards = {}
         let collections = {}
         for (const c of cardsDB) {
@@ -151,10 +161,12 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 rarityDraw = "X";
                 player.PITYX = -1;
                 collecDraw = guarantedCollec
+                achToCheck.push("OBTAINPITYX")
             } else if (player.PITYS >= 11) {
                 rarityDraw = "S"
                 player.PITYS = -1;
                 collecDraw = guarantedCollec
+                achToCheck.push("OBTAINPITYS")
             } else {
 
                 if (forcedRarity) {
@@ -175,6 +187,8 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                         player.PITYS = -1
                     }
                 }
+
+
 
                 let randCollec = Math.floor(Math.random() * 100)
                 let probaupColl = ["", 0]
@@ -200,6 +214,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 player.LOYALTYCARD++
             }
 
+            if(rarityDraw=="✰")achToCheck.push("MULTIPLE10SEC")
+            if(!achToCheck.includes(`COLLEC${collecDraw}`) && rarityDraw!="F")achToCheck.push(`COLLEC${collecDraw}`)
+
             let randCard = Math.floor(Math.random() * 100)
             let currentCardProba = 0;
             let cardDraw;
@@ -222,7 +239,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             }
             allCards.push(cardDraw)
         }
-        saveAndShowGacha(interaction, player, allCards, cards, chaosStatus)
+        await saveAndShowGacha(interaction, player, allCards, cards, chaosStatus)
+        achToCheck.concat(["CARDS","MULTIPLE","LEVEL","RARITY","SEASNAILS"])
+        achievement.checkAchievementsToGive(interaction.guild,interaction.user,achToCheck)
     });
 
 }
@@ -233,10 +252,10 @@ const chaosResponse = {
     "loyalty": "Grâce à ta carte de fidélité, ce tirage était gratuit !"
 }
 
-const saveAndShowGacha = function (interaction, player, allCards, cards, chaosStatus) {
+const saveAndShowGacha = async function (interaction, player, allCards, cards, chaosStatus) {
     let user = interaction.user
     let sql = "SELECT * FROM INVENTORY WHERE PLAYERID='" + user.id + "'"
-    db.select(sql, async (res) => {
+    await db.select(sql, async (res) => {
         player.inventory = {}
         for (const r of res) {
             player.inventory[r.ID] = r
@@ -254,7 +273,7 @@ const saveAndShowGacha = function (interaction, player, allCards, cards, chaosSt
             await interaction.followUp({embeds: [embeds[i]], files: [attachments[i]]})
         }
         if (chaosStatus && chaosResponse[chaosStatus]) await interaction.followUp(chaosResponse[chaosStatus])
-        db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS- ${player.price} ,PITYX= ${player.PITYX} ,PITYS= ${player.PITYS}, LOYALTYCARD=${player.LOYALTYCARD} WHERE ID='${user.id}'`)
+        await db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS- ${player.price} ,PITYX= ${player.PITYX} ,PITYS= ${player.PITYS}, LOYALTYCARD=${player.LOYALTYCARD} WHERE ID='${user.id}'`)
     });
 }
 
