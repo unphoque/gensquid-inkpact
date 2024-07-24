@@ -119,11 +119,11 @@ client.on('ready', async () => {
         })
     })
 
-    schedule.scheduleJob('0 4 * * 1', async () => {
+    /*schedule.scheduleJob('0 4 * * 1', async () => {
         let guild=await client.guilds.fetch(CONFIG.GUILD_ID)
         let channel=await guild.channels.fetch('1007698058156453889')
         blackmarket.showWeekly(channel)
-    })
+    })*/
 
 });
 
