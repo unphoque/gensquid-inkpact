@@ -49,12 +49,12 @@ const db = require("../db.js")
 const {MessageEmbed} = require("discord.js");
 const collections=require("../collections.json")
 
-const checkBin = function (achValue: string, myList) {
+const checkBin = function (achValue, myList) {
     let i = achValue.indexOf('1')
     return myList[i] == "1"
 }
 
-const setBin = function(achValue: string, myList){
+const setBin = function(achValue, myList){
     let i = achValue.indexOf('1')
     let newList = myList.substring(0,i)+"1"+myList.substring((i+1))
     return newList
@@ -260,7 +260,7 @@ const newAchievementObtained = async function (guild, user, achievement) {
     channel.send({embeds:[embed]})
 }
 
-const checkAchievementProgress = async function (user, achId: string) {
+const checkAchievementProgress = async function (user, achId) {
     //return [hasAchievementRequirements, textToPrintInAchievementBox, isAOneTimeCheck]
     if (achId.startsWith("SEASNAILS")) {
 
