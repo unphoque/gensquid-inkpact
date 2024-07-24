@@ -130,7 +130,11 @@ client.on('ready', async () => {
 //MESSAGE
 client.on("messageCreate", async message => {
 
-    if(Date.now()<dateMaintenance)return
+    if(Date.now()<dateMaintenance){
+        let d=new Date().getTime()
+        await db.update(`UPDATE PLAYERS SET LASTMESSAGE="${d}" WHERE ID="${message.author.id}"`,()=>{})
+        return
+    }
 
     let res = await db.select("SELECT * FROM PLAYERS WHERE ID='"+message.author.id+"'",(res)=> {return res})
     if (res.length==0)return
