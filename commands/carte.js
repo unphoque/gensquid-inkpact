@@ -180,6 +180,7 @@ const addCardToInventory = async function(user,cardinfo,interaction){
     let sql="SELECT * FROM INVENTORY WHERE PLAYERID='"+user.id+"' AND CARDID="+cardinfo.ID
     let cardname=cardinfo.NAME
     let cardcollec=cardinfo.COLLECTION
+    let cardtitle = cardinfo.TITLE
     let cardnumber=cardinfo.NUMBER
     await db.select(sql,async (res)=>{
         if (res.length==0){
@@ -193,7 +194,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             let attachement = new MessageAttachment(file,name)
             let embed=new MessageEmbed()
                 .setTitle(cardinfo.NAME)
-                .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
+                .setDescription(`*${cardtitle}*`+
+                    "\n\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                     "\n**"+cardinfo.RARITY+"**"+
                     (cardinfo.RARITY!="✰"?"\nNiveau 1":""))
                 .setImage("attachment://"+name)
@@ -219,7 +221,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
+                    .setDescription(`*${cardtitle}*`+
+                        "\n\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+newlv:""))
                     .setImage("attachment://"+name)
@@ -236,7 +239,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
                 let attachement = new MessageAttachment(file,name)
                 let embed=new MessageEmbed()
                     .setTitle(cardinfo.NAME)
-                    .setDescription("__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
+                    .setDescription(`*${cardtitle}*`+
+                        "\n\n__**"+cardinfo.COLLECNAME+"**__ - n° "+cardnumber+"/"+cardinfo.MAX+
                         "\n**"+cardinfo.RARITY+"**"+
                         (cardinfo.RARITY!="✰"?"\nNiveau "+res[0].CARDLEVEL:""))
                     .setImage("attachment://"+name)
