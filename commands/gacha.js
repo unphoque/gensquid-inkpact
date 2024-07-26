@@ -85,6 +85,7 @@ const checkGacha = async function (interaction) {
 
 const playGacha = async function (interaction, player, forcedRarity = "") {
     let achToCheck=[]
+    if (forcedRarity)achToCheck.push("BM")
 
     let nbDrawInit = interaction.options.getSubcommand().substring(1);
     let nbDraw;
@@ -189,21 +190,28 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 }
 
 
-
-                let randCollec = Math.floor(Math.random() * 100)
-                let probaupColl = ["", 0]
-                let otherColl = []
-                for (const [co, p] of Object.entries(collections)) {
-                    if (p["PROBAUP"])
-                        probaupColl = [co, p["PROBAUP"]]
-                    else if (co != "FAKE")
-                        otherColl.push(co)
-                }
-                if (randCollec < probaupColl[1]) {
-                    collecDraw = probaupColl[0]
-                } else {
-                    randCollec = Math.floor(randCollec * otherColl.length / 100)
-                    collecDraw = otherColl[randCollec]
+                if(forcedRarity){
+                    let collecKeys=Object.keys(collections)
+                    collecKeys.splice(collecKeys.indexOf("FAKE"),1)
+                    if(rarityDraw=="✰")collecKeys.splice(collecKeys.indexOf("SO"),1)
+                    let randCollec = Math.floor(Math.random() * collecKeys.length)
+                    collecDraw=collecKeys[randCollec]
+                }else{
+                    let randCollec = Math.floor(Math.random() * 100)
+                    let probaupColl = ["", 0]
+                    let otherColl = []
+                    for (const [co, p] of Object.entries(collections)) {
+                        if (p["PROBAUP"])
+                            probaupColl = [co, p["PROBAUP"]]
+                        else if (co != "FAKE")
+                            otherColl.push(co)
+                    }
+                    if (randCollec < probaupColl[1]) {
+                        collecDraw = probaupColl[0]
+                    } else {
+                        randCollec = Math.floor(randCollec * otherColl.length / 100)
+                        collecDraw = otherColl[randCollec]
+                    }
                 }
             }
             if (!forcedRarity) {
@@ -240,7 +248,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             allCards.push(cardDraw)
         }
         await saveAndShowGacha(interaction, player, allCards, cards, chaosStatus)
-        achToCheck.concat(["CARDS","MULTIPLE","LEVEL","RARITY","SEASNAILS"])
+        achToCheck=achToCheck.concat(["CARDS","MULTIPLE","LEVEL","RARITY","SEASNAILS"])
         achievement.checkAchievementsToGive(interaction.guild,interaction.user,achToCheck)
     });
 
