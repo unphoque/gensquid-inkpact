@@ -76,7 +76,7 @@ const proba=require("./commands/proba")
 const blackmarket=require("./commands/blackmarket")
 const achievement=require("./commands/achievement")
 
-const dateMaintenance=Date.UTC(2024,6,29,6,0,0,0)
+const dateMaintenance=Date.UTC(2024,6,27,6,0,0,0)
 const msgMaintenance="Désolé, j'suis en vacances ! Des bisous et à **BIENTÔT.**"
 
 client.on('ready', async () => {
