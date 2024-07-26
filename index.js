@@ -313,7 +313,7 @@ client.on('interactionCreate', async interaction => {
                 break
         }
     //}else if(interaction.commandName=="achievement"){
-    }else if(interaction.commandName=="bientot"){
+    }else if(interaction.commandName=="achievement"){
         switch (interaction.options.getSubcommand()) {
             case "l":
             case "liste":
