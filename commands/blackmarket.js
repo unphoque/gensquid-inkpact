@@ -50,6 +50,7 @@ const {toFileString, setEmbedColor} = require("./util");
 const permissions = require("./permissions");
 const gacha = require("./gacha");
 const achievement = require("./achievement");
+const {checkAchievementsToGive} = require("./achievement");
 
 const sellCardBase=async function(user,cardname, price ,sql,interaction){
     await db.select(sql,async (card)=>{

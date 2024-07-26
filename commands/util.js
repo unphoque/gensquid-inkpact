@@ -43,3 +43,9 @@ const setEmbedColor=function(rarity, embed){
 }
 
 module.exports.setEmbedColor=setEmbedColor
+
+const sleep = function(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+module.exports.sleep=sleep

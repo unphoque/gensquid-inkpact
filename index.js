@@ -54,7 +54,8 @@ db.select("SELECT * FROM RARITY",(res) => {
 const collections=require("./collections.json");
 db.select("SELECT * FROM COLLECTIONS",(res) => {
     for (const c of res) {
-        collections[c.NAME].choice = {name:c.SHORT, value:c.SHORT};
+        collections[c.NAME]={}
+        collections[c.NAME]["choice"] = {name:c.SHORT, value:c.SHORT};
     }
     fs.writeFile("./collections.json", JSON.stringify(collections),"utf8",()=>console.log("Rarities updated"));
 
@@ -311,16 +312,20 @@ client.on('interactionCreate', async interaction => {
                 await proba.resetProba(interaction)
                 break
         }
-    }else if(interaction.commandName=="achievement"){
+    //}else if(interaction.commandName=="achievement"){
+    }else if(interaction.commandName=="bientot"){
         switch (interaction.options.getSubcommand()) {
+            case "l":
             case "liste":
                 await interaction.deferReply();
                 await achievement.showAchievementList(interaction)
                 break
+            case "i":
             case "info":
                 await interaction.deferReply();
                 await achievement.showAchievementDetail(interaction)
                 break
+            case "g":
             case "give":
                 await interaction.deferReply();
                 await achievement.giveAchievement(interaction)

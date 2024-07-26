@@ -1,5 +1,6 @@
 const {SlashCommandBuilder} = require('@discordjs/builders');
 const permissions = require("./permissions")
+const secretsql = require("../secretsql.json")
 
 //PENSER A RENAME LA COMMANDE ET LES DESC
 
@@ -47,17 +48,20 @@ module.exports.data = data;
 
 const db = require("../db.js")
 const {MessageEmbed} = require("discord.js");
-const collections=require("../collections.json")
+const collections = require("../collections.json")
+const {sleep} = require("./util");
 
 const checkBin = function (achValue, myList) {
     let i = achValue.indexOf('1')
     return myList[i] == "1"
 }
 
-const setBin = function(achValue, myList){
+const setBin = function (achValue, myList) {
     let i = achValue.indexOf('1')
-    let newList = myList.substring(0,i)+"1"+myList.substring((i+1))
-    return newList
+    myList = myList.split('')
+    myList.splice(i, 1, "1")
+    myList = myList.join('')
+    return myList
 }
 
 const showAchievementList = async function (interaction) {
@@ -68,7 +72,7 @@ const showAchievementList = async function (interaction) {
     let myList = await db.select(`SELECT ACHDATA
                                   FROM PLAYERS
                                   WHERE ID = "${user.id}"`, (res) => {
-        return res[0]
+        return res[0].ACHDATA
     })
     let embed = new MessageEmbed().setTitle("Liste des achievements")
     let desc = "*ID - Nom*"
@@ -77,14 +81,14 @@ const showAchievementList = async function (interaction) {
             let l = list[listKey]
             let tmp = `${l.ID} - ${l.NAME}`
             if (checkBin(l.VALUE, myList)) tmp = `**${tmp}**`
-            desc = `\n${tmp}`
+            desc += `\n${tmp}`
         }
     } else {
         for (const listKey in list) {
             let l = list[listKey]
             let tmp = `${(l.SECRET == 1 && !(checkBin(l.VALUE, myList)) ? "???" : l.ID)} - ${l.NAME}`
             if (checkBin(l.VALUE, myList)) tmp = `**${tmp}**`
-            desc = `\n${tmp}`
+            desc += `\n${tmp}`
         }
     }
 
@@ -113,8 +117,8 @@ const showAchievementDetail = async function (interaction) {
             let desc = `${achievement.DESC}\nRécompense : ${achievement.REWARD} coquillages\n`
             if (checkBin(achievement.VALUE, myList)) {
                 desc += "**COMPLÉTÉ !**"
-            }else{
-                let data=await checkAchievementProgress(user, achievement.ID)
+            } else {
+                let data = await checkAchievementProgress(user, achievement.ID)
                 desc += data[1]
             }
 
@@ -129,21 +133,29 @@ const showAchievementDetail = async function (interaction) {
 module.exports.showAchievementDetail = showAchievementDetail
 
 const giveAchievement = async function (interaction) {
-    if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
+    if (!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
 
-    let achId=interaction.options.getString("id")
-    await db.select(`SELECT * FROM ACHIEVEMENTS WHERE ID="${achId}"`,async (res)=>{
-        if (res.length==0) return interaction.editReply("L'achievement cherché n'existe pas.")
-        let achievement=res[0]
-        let joueur=interaction.options.getUser("joueur")
-        let myList=await db.select(`SELECT ACHDATA FROM PLAYERS WHERE ID="${joueur.id}"`,(res)=>{return res[0].ACHDATA})
-        if(checkBin(achievement.VALUE,myList)) return interaction.editReply("Le joueur possède déjà cet achievement.")
+    let achId = interaction.options.getString("id")
+    await db.select(`SELECT *
+                     FROM ACHIEVEMENTS
+                     WHERE ID = "${achId}"`, async (res) => {
+        if (res.length == 0) return interaction.editReply("L'achievement cherché n'existe pas.")
+        let achievement = res[0]
+        let joueur = interaction.options.getUser("joueur")
+        let myList = await db.select(`SELECT ACHDATA
+                                      FROM PLAYERS
+                                      WHERE ID = "${joueur.id}"`, (res) => {
+            return res[0].ACHDATA
+        })
+        if (checkBin(achievement.VALUE, myList)) return interaction.editReply("Le joueur possède déjà cet achievement.")
 
-        let newList=setBin(achievement.VALUE,myList)
+        let newList = setBin(achievement.VALUE, myList)
 
-        await db.update(`UPDATE PLAYERS SET ACHDATA="${newList}" WHERE ID="${joueur.id}"`)
+        await db.update(`UPDATE PLAYERS
+                         SET ACHDATA="${newList}"
+                         WHERE ID = "${joueur.id}"`)
 
-        newAchievementObtained(interaction.guild,joueur,achievement)
+        newAchievementObtained(interaction.guild, joueur, achievement)
         interaction.editReply("L'achievement a été donné avec succès.")
     })
 
@@ -151,113 +163,113 @@ const giveAchievement = async function (interaction) {
 
 module.exports.giveAchievement = giveAchievement
 
-const equivalence={
-    "SEASNAILS":["SEASNAILS1K","SEASNAILS10K","SEASNAILS100K","SEASNAILS1M"],
-    "CARDS":["CARDS10","CARDS25","CARDS50","CARDS100","CARDS200"],
-    "RARITY":["RARITYS","RARITYX","RARITYSEC","RARITYF"],
-    "BM":["BM1","BM10","BM25"],
-    "MULTIPLE":["MULTIPLE10","MULTIPLE25","MULTIPLE50","MULTIPLE10SEC"],
-    "RECOMP":["RECOMPWEEK","RECOMPMONTH","RECOMPYEAR"]
+let equivalence = {
+    "SEASNAILS": ["SEASNAILS1K", "SEASNAILS10K", "SEASNAILS100K", "SEASNAILS1M"],
+    "CARDS": ["CARDS10", "CARDS25", "CARDS50", "CARDS100", "CARDS200"],
+    "RARITY": ["RARITYS", "RARITYX", "RARITYSEC", "RARITYF"],
+    "BM": ["BM1", "BM10", "BM25"],
+    "MULTIPLE": ["MULTIPLE10", "MULTIPLE25", "MULTIPLE50", "MULTIPLE10SEC"],
+    "RECOMP": ["RECOMPWEEK", "RECOMPMONTH", "RECOMPYEAR"],
+    "LEVEL": ["LEVELB", "LEVELA", "LEVELS", "LEVELX"]
 }
 
 for (const collectionsKey in collections) {
-    let short=collections[collectionsKey].name
-    if(short=="FAKE")continue
-    equivalence[`COLLEC${short}`]=[`FULL${short}`,`PERFECT${short}`]
+    let short = collections[collectionsKey].choice.name
+    if (short == "FAKE") continue
+    equivalence["COLLEC" + short] = [`FULL${short}`, `PERFECT${short}`]
 }
+
+console.log(equivalence)
 
 const checkAchievementsToGive = async function (guild, user, achievementList) {
 
-    let myList=await db.select(`SELECT ACHDATA FROM PLAYERS WHERE ID="${user.id}"`,(res)=>{return res[0]})
-    let allAchievements=await db.select(`SELECT * FROM ACHIEVEMENTS`,(res)=>{
-        let objAll={}
+    let myList = await db.select(`SELECT ACHDATA
+                                  FROM PLAYERS
+                                  WHERE ID = "${user.id}"`, (res) => {
+        return res[0].ACHDATA
+    })
+    let allAchievements = await db.select(`SELECT *
+                                           FROM ACHIEVEMENTS`, (res) => {
+        let objAll = {}
         for (let i = 0; i < res.length; i++) {
-            objAll[res[i].ID]=res[i]
+            objAll[res[i].ID] = res[i]
         }
         return objAll
     })
 
     for (const equivalenceKey in equivalence) {
-        if(achievementList.includes(equivalenceKey)){
-            let achList=equivalence[equivalenceKey]
-            let achToChange=false
-            for (const achListKey in achList) {
-                if(checkBin(achList[achListKey],myList))continue
-                else{
-                    achToChange=achList[achListKey]
-                    break
-                }
-            }
-
-            achievementList.splice(achievementList.indexOf(equivalenceKey,1))
-            if(achToChange)achievementList.push(achToChange)
+        if (achievementList.includes(equivalenceKey)) {
+            let achList = equivalence[equivalenceKey]
+            achievementList.splice(achievementList.indexOf(equivalenceKey), 1)
+            achievementList = achievementList.concat(achList)
         }
     }
 
-    if(achievementList.includes("LEVEL")){
-        achievementList.splice(achievementList.indexOf("LEVEL"))
-        achievementList.concat(["LEVELB","LEVELA","LEVELS","LEVELX"])
-    }
-    if(achievementList.includes("RARITY")){
-        achievementList.splice(achievementList.indexOf("RARITY"))
-        achievementList.concat(["RARITYS","RARITYX","RARITYSEC","RARITYF"])
-    }
+    let cs = false
 
-    let cs=false
+    let recomp = 0
 
-    let newList=myList
-    let recomp=0
+    for (let i = 0; i < achievementList.length; i++) {
+        let achId = achievementList[i]
+        let achievement = allAchievements[achId]
+        if (checkBin(achievement.VALUE, myList)){
+            if (achId == "CARDS200") cs = true
+            continue
+        }
 
-    for (let i = 0; i < achievementList.l; i++) {
-        let achievement=allAchievements[achId]
-        if(checkBin(achievement.VALUE,myList))continue
+        let achProgress = await checkAchievementProgress(user, achId)
 
-        let achProgress=checkAchievementProgress(user,achId)
-
-        if(achProgress[0] || (!achProgress[0] && achProgress[2])){
-            await newAchievementObtained(guild,user,achievement)
-            setBin(achievement.VALUE,myList)
-            recomp+=achievement.REWARD
-            if (achId=="CARDS200")cs=true
+        if (achProgress[0] || (!achProgress[0] && achProgress[2])) {
+            await newAchievementObtained(guild, user, achievement)
+            myList = setBin(achievement.VALUE, myList)
+            recomp += achievement.REWARD
+            if (achId == "CARDS200") cs = true
         }
     }
 
-    if (recomp)db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${recomp}, ACHDATA="${newList}" WHERE ID="${user.id}"`,()=>{})
+    if (recomp) await db.update(`UPDATE PLAYERS
+                                 SET SEASNAILS=SEASNAILS + ${recomp},
+                                     ACHDATA="${myList}"
+                                 WHERE ID = "${user.id}"`, () => {
+    })
 
-    if (cs)checkSecret(guild,user,myList, allAchievements)
+    if (cs) checkSecret(guild, user, myList, allAchievements)
 
 }
 
 module.exports.checkAchievementsToGive = checkAchievementsToGive
 
-const secretsql=require("../secretsql.json")
+const checkSecret = async function (guild, user, myList, allAchievements) {
 
-const checkSecret=async function(guild, user, myList, allAchievements){
-
-    let newList=myList
-    let recomp=0
-    for (const secretsqlKey in secretsql.keys()) {
-        let achievement=allAchievements[secretsqlKey]
-        if(checkBin(achievement.VALUE,myList))continue
-        let achProgress=checkAchievementProgress(user,achId)
-        if(achProgress[0] || (!achProgress[0] && achProgress[2])){
-            await newAchievementObtained(guild,user,achievement)
-            setBin(achievement.VALUE,myList)
-            recomp+=achievement.REWARD
-        }else break
+    let newList = myList
+    let recomp = 0
+    for (const secretsqlKey in secretsql) {
+        let achievement = allAchievements[secretsqlKey]
+        if (checkBin(achievement.VALUE, myList)) continue
+        let achProgress = checkAchievementProgress(user, secretsqlKey)
+        if (achProgress[0] || (!achProgress[0] && achProgress[2])) {
+            await newAchievementObtained(guild, user, achievement)
+            setBin(achievement.VALUE, myList)
+            recomp += achievement.REWARD
+        } else break
     }
-    if (recomp)db.update(`UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${recomp}, ACHDATA="${newList}" WHERE ID="${user.id}"`,()=>{})
+    if (recomp) await db.update(`UPDATE PLAYERS
+                                 SET SEASNAILS=SEASNAILS + ${recomp},
+                                     ACHDATA="${newList}"
+                                 WHERE ID = "${user.id}"`, () => {
+    })
 }
 
 const newAchievementObtained = async function (guild, user, achievement) {
 
     let embed = new MessageEmbed().setTitle(achievement.NAME)
-    let desc = `<@${user.id}>, **NOUVEL ACHIEVEMENT OBTENU !**\n\n${achievement.DESC}\nRécompense : ${achievement.REWARD} coquillages\n`
-    (achievement.SECRET==0?embed.setColor(0xC0C0C0):embed.setColor(0xFFD700))
+    let desc = `**NOUVEL ACHIEVEMENT OBTENU <@${user.id}> !**\n\n${achievement.DESC}\n*Récompense : ${achievement.REWARD} coquillages*\n`;
+    (achievement.SECRET == 0 ? embed.setColor(0xC0C0C0) : embed.setColor(0xFFD700))
     embed.setDescription(desc)
     //let channel=guild.channels.fetch('1007698058156453889') TCG SO GACHA
-    let channel=guild.channels.fetch('502505240759631873') //TEST
-    channel.send({embeds:[embed]})
+    let channel = await guild.channels.fetch('502505240759631873') //TEST
+    channel.send({embeds: [embed]})
+    await sleep(800)
 }
 
 const checkAchievementProgress = async function (user, achId) {
@@ -278,18 +290,35 @@ const checkAchievementProgress = async function (user, achId) {
             case "SEASNAILS10K":
                 totaltocheck *= 10
         }
-        return (totalss < totaltocheck ? [false, `${totalss}/${totaltocheck} (${Math.round(totalss * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**",, false])
+        return (totalss < totaltocheck ? [false, `${totalss}/${totaltocheck} (${Math.round(totalss * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", , false])
 
     } else if (achId.startsWith("CARDS")) {
 
-        let totalcards = await db.select(`SELECT COUNT(*)
+        let totalcards = await db.select(`SELECT COUNT(*) AS COUNT
                                           FROM INVENTORY
                                           WHERE PLAYERID = "${user.id}"`, (res) => {
-            return res[0]
+            return res[0].COUNT
         })
         let totaltocheck = parseInt(achId.substring(5))
         return (totalcards < totaltocheck ? [false, `${totalcards}/${totaltocheck} (${Math.round(totalcards * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
 
+    } else if (achId.startsWith("LEVEL")) {
+
+        let rarity = achId[5]
+
+        let hasMaxLevel = await db.select(`SELECT *
+                                           FROM INVENTORY i,
+                                                CARDS c,
+                                                RARITY r
+                                           WHERE i.PLAYERID = "${user.id}"
+                                             AND c.RARITY = "${rarity}"
+                                             AND i.CARDID = c.ID
+                                             AND i.CARDLEVEL = r.MAXLV
+                                             AND c.RARITY = r.NAME`, (res) => {
+            return res[0]
+        })
+
+        return (hasMaxLevel ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
     } else if (achId.startsWith("BM")) {
 
         let totaltocheck = 10
@@ -321,7 +350,7 @@ const checkAchievementProgress = async function (user, achId) {
     } else if (achId.startsWith("MULTIPLE")) {
 
         if (achId == "MULTIPLE10SEC") {
-            let totalmultiple = await db.select(`SELECT MAX(QUANTITY)
+            let totalmultiple = await db.select(`SELECT MAX(QUANTITY) as MAX
                                                  FROM INVENTORY,
                                                       CARDS
                                                  WHERE PLAYERID = "${user.id}"
@@ -333,7 +362,7 @@ const checkAchievementProgress = async function (user, achId) {
             return (totalmultiple < totaltocheck ? [false, `${totalmultiple}/${totaltocheck} (${Math.round(totalmultiple * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
 
         } else {
-            let totalmultiple = await db.select(`SELECT MAX(QUANTITY)
+            let totalmultiple = await db.select(`SELECT MAX(QUANTITY) as MAX
                                                  FROM INVENTORY
                                                  WHERE PLAYERID = "${user.id}"`, (res) => {
                 return res[0].MAX
@@ -390,7 +419,7 @@ const checkAchievementProgress = async function (user, achId) {
     } else if (achId.startsWith("FULL")) {
 
         let collec = achId.substring(4)
-        let totalcollec = await db.select(`SELECT COUNT(*)
+        let totalcollec = await db.select(`SELECT COUNT(*) AS COUNT
                                            FROM INVENTORY,
                                                 CARDS
                                            WHERE PLAYERID = "${user.id}"
@@ -399,17 +428,18 @@ const checkAchievementProgress = async function (user, achId) {
                                              AND COLLECTION = "${collec}"`, (res) => {
             return res[0].COUNT
         })
-        let totaltocheck = await db.select(`SELECT MAX
-                                            FROM COLLECTIONS
-                                            WHERE SHORT = "${collec}"`, (res) => {
-            return res[0].MAX
+        let totaltocheck = await db.select(`SELECT COUNT(*) AS COUNT
+                                            FROM CARDS
+                                            WHERE COLLECTION = "${collec}"
+                                              AND OBTAINABLE = 1`, (res) => {
+            return res[0].COUNT
         })
         return (totalcollec < totaltocheck ? [false, `${totalcollec}/${totaltocheck} (${Math.round(totalcollec * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
 
     } else if (achId.startsWith("PERFECT")) {
 
         let collec = achId.substring(7)
-        let totalcollec = await db.select(`SELECT COUNT(*)
+        let totalcollec = await db.select(`SELECT COUNT(*) AS COUNT
                                            FROM INVENTORY i,
                                                 CARDS c,
                                                 RARITY r
@@ -421,25 +451,30 @@ const checkAchievementProgress = async function (user, achId) {
                                              AND i.CARDLEVEL = r.MAXLV`, (res) => {
             return res[0].COUNT
         })
-        let totaltocheck = await db.select(`SELECT MAX
-                                            FROM COLLECTIONS
-                                            WHERE SHORT = "${collec}"`, (res) => {
-            return res[0].MAX
+        let totaltocheck = await db.select(`SELECT COUNT(*) AS COUNT
+                                            FROM CARDS
+                                            WHERE COLLECTION = "${collec}"
+                                              AND OBTAINABLE = 1`, (res) => {
+            return res[0].COUNT
         })
         return (totalcollec < totaltocheck ? [false, `${totalcollec}/${totaltocheck} (${Math.round(totalcollec * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
 
-    } else if (secretsql.keys().includes(achId)) {
+    } else if (Object.keys(secretsql).includes(achId)) {
 
-        if (achId==secretsql.keys()[0]) {
-            let res=await db.select(secretsql.values()[0],(res)=> {return res[0]})
-            let totalsecret=res.INV
-            let totaltocheck=res.TOT
+        if (achId == Object.keys(secretsql)[0]) {
+            let res = await db.select(secretsql.values()[0], (res) => {
+                return res[0]
+            })
+            let totalsecret = res.INV
+            let totaltocheck = res.TOT
             return (totalsecret < totaltocheck ? [false, `${totalsecret}/${totaltocheck} (${Math.round(totalsecret * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
 
         } else {
-            let res=await db.select(secretsql.values()[1],(res)=> {return res[0]})
-            let totalsecret=res.INV
-            let totaltocheck=res.TOT
+            let res = await db.select(secretsql.values()[1], (res) => {
+                return res[0]
+            })
+            let totalsecret = res.INV
+            let totaltocheck = res.TOT
             return (totalsecret < totaltocheck ? [false, `${totalsecret}/${totaltocheck} (${Math.round(totalsecret * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
         }
 
