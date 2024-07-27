@@ -241,7 +241,7 @@ const checkSecret = async function (guild, user, myList, allAchievements) {
 const newAchievementObtained = async function (guild, user, achievement) {
 
     let embed = new MessageEmbed().setTitle(achievement.NAME)
-    let desc = `**NOUVEL ACHIEVEMENT OBTENU <@${user.id}> !**\n\n${achievement.DESC}\n*Récompense : ${achievement.REWARD} coquillages*\n`;
+    let desc = `**NOUVEL ACHIEVEMENT OBTENU <@${user.id}> !**\n\n${achievement.DESC}\n*Récompense : ${(achievement.REWARD==2000?"Surprise + 2000":achievement.REWARD)} coquillages*\n`;
     (achievement.SECRET == 0 ? embed.setColor(0xC0C0C0) : embed.setColor(0xFFD700))
     embed.setDescription(desc)
     let channel=await guild.channels.fetch('1007698058156453889') //TCG SO GACHA
