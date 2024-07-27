@@ -2,9 +2,6 @@ const {SlashCommandBuilder} = require('@discordjs/builders');
 const permissions = require("./permissions")
 const secretsql = require("../secretsql.json")
 
-//PENSER A RENAME LA COMMANDE ET LES DESC
-
-/*
 const data = new SlashCommandBuilder()
     .setName('achievement')
     .setDescription('Commandes relatives aux achievements')
@@ -23,26 +20,7 @@ const data = new SlashCommandBuilder()
             .setDescription('Donne un achievement à un joueur (admin seulement)')
             .addUserOption(option => option.setName('joueur').setDescription('Le joueur').setRequired(true))
             .addStringOption(option => option.setName('id').setDescription('ID de l\'achievement').setRequired(true)))
-*/
 
-const data = new SlashCommandBuilder()
-    .setName('bientot')
-    .setDescription('Bientôt')
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('l')
-            .setDescription('Bientôt'))
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('i')
-            .setDescription('Bientôt')
-            .addStringOption(option => option.setName('id').setDescription('Bientôt').setRequired(true)))
-    .addSubcommand(subcommand =>
-        subcommand
-            .setName('g')
-            .setDescription('Bientôt')
-            .addUserOption(option => option.setName('joueur').setDescription('Le joueur').setRequired(true))
-            .addStringOption(option => option.setName('id').setDescription('Bientôt').setRequired(true)))
 
 module.exports.data = data;
 
@@ -266,8 +244,8 @@ const newAchievementObtained = async function (guild, user, achievement) {
     let desc = `**NOUVEL ACHIEVEMENT OBTENU <@${user.id}> !**\n\n${achievement.DESC}\n*Récompense : ${achievement.REWARD} coquillages*\n`;
     (achievement.SECRET == 0 ? embed.setColor(0xC0C0C0) : embed.setColor(0xFFD700))
     embed.setDescription(desc)
-    //let channel=guild.channels.fetch('1007698058156453889') TCG SO GACHA
-    let channel = await guild.channels.fetch('502505240759631873') //TEST
+    let channel=guild.channels.fetch('1007698058156453889') //TCG SO GACHA
+    //let channel = await guild.channels.fetch('502505240759631873') //TEST
     channel.send({embeds: [embed]})
     await sleep(800)
 }
