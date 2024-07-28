@@ -297,9 +297,9 @@ const checkAchievementProgress = async function (user, achId) {
             return (checkBin(achValue, myList) ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
         }
 
-        let rarity = achId[5]
+        let rarity = achId[6]
 
-        let hasMaxLevel = await db.select(`SELECT *
+        let hasMaxLevel = await db.select(`SELECT COUNT(*) AS COUNT
                                            FROM INVENTORY i,
                                                 CARDS c,
                                                 RARITY r
@@ -307,15 +307,15 @@ const checkAchievementProgress = async function (user, achId) {
                                              AND c.RARITY = "${rarity}"
                                              AND i.CARDID = c.ID
                                              AND c.RARITY = r.NAME`, (res) => {
-            return res
+            return res[0].COUNT
         })
 
-        return (hasMaxLevel.length ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
+        return (hasMaxLevel!=0 ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", false])
     } else if (achId.startsWith("LEVEL")) {
 
         let rarity = achId[5]
 
-        let hasMaxLevel = await db.select(`SELECT *
+        let hasMaxLevel = await db.select(`SELECT COUNT(*) AS COUNT
                                            FROM INVENTORY i,
                                                 CARDS c,
                                                 RARITY r
@@ -324,10 +324,10 @@ const checkAchievementProgress = async function (user, achId) {
                                              AND i.CARDID = c.ID
                                              AND i.CARDLEVEL = r.MAXLV
                                              AND c.RARITY = r.NAME`, (res) => {
-            return res
+            return res[0].COUNT
         })
 
-        return (hasMaxLevel.length ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
+        return (hasMaxLevel!=0 ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", false])
     } else if (achId.startsWith("BM")) {
 
         let totaltocheck = 10
