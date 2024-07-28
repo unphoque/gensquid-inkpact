@@ -41,7 +41,7 @@ const permissions = require("./permissions");
 
 const createPlayer=async function(interaction){
     let user = interaction.user
-    let sql="INSERT INTO PLAYERS(ID,NAME) VALUES ('"+user.id+"','"+user.username+"')"
+    let sql=`INSERT INTO PLAYERS(ID,NAME,ACHDATA) VALUES ('${user.id}','${user.name}','0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000')`
     await db.insert(sql,(res)=>{
         if(res[1]==1){
             interaction.editReply("Ton compte a bien été créé !")
@@ -60,7 +60,9 @@ const deletePlayer=async function(interaction){
         if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
         else user=interaction.options.getUser("joueur")
     }
-    let sql="DELETE FROM INVENTORY WHERE PLAYERID='"+user.id+"'"
+    let sql="DELETE FROM BLACKMARKET WHERE OWNERID='"+user.id+"'"
+    await db.delete(sql,()=>{})
+    sql="DELETE FROM INVENTORY WHERE PLAYERID='"+user.id+"'"
     await db.delete(sql,()=>{})
     sql="DELETE FROM PLAYERS WHERE ID='"+user.id+"'"
     await db.delete(sql,(res)=>{
