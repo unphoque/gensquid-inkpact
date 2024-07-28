@@ -297,7 +297,8 @@ const checkAchievementProgress = async function (user, achId) {
             return (checkBin(achValue, myList) ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
         }
 
-        let rarity = achId[6]
+        let rarity = achId.substring(6)
+        if(rarity=="SEC")rarity="✰"
 
         let hasMaxLevel = await db.select(`SELECT COUNT(*) AS COUNT
                                            FROM INVENTORY i,
