@@ -280,6 +280,37 @@ const checkAchievementProgress = async function (user, achId) {
         let totaltocheck = parseInt(achId.substring(5))
         return (totalcards < totaltocheck ? [false, `${totalcards}/${totaltocheck} (${Math.round(totalcards * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
 
+    } else if (achId.startsWith("RARITY")) {
+
+
+        if(achId=="RARITYF10"){
+            let myList = await db.select(`SELECT ACHDATA
+                                      FROM PLAYERS
+                                      WHERE ID = "${user.id}"`, (res) => {
+                return res[0]
+            })
+            let achValue = await db.select(`SELECT VALUE
+                                        FROM ACHIEVEMENTS
+                                        WHERE ID = "${achId}";`, async (res) => {
+                return res[0].VALUE
+            })
+            return (checkBin(achValue, myList) ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
+        }
+
+        let rarity = achId[5]
+
+        let hasMaxLevel = await db.select(`SELECT *
+                                           FROM INVENTORY i,
+                                                CARDS c,
+                                                RARITY r
+                                           WHERE i.PLAYERID = "${user.id}"
+                                             AND c.RARITY = "${rarity}"
+                                             AND i.CARDID = c.ID
+                                             AND c.RARITY = r.NAME`, (res) => {
+            return res
+        })
+
+        return (hasMaxLevel.length ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
     } else if (achId.startsWith("LEVEL")) {
 
         let rarity = achId[5]
@@ -293,10 +324,10 @@ const checkAchievementProgress = async function (user, achId) {
                                              AND i.CARDID = c.ID
                                              AND i.CARDLEVEL = r.MAXLV
                                              AND c.RARITY = r.NAME`, (res) => {
-            return res[0]
+            return res
         })
 
-        return (hasMaxLevel ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
+        return (hasMaxLevel.length ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
     } else if (achId.startsWith("BM")) {
 
         let totaltocheck = 10
