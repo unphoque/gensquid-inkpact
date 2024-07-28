@@ -5,6 +5,7 @@ gensquid_impact.db
 modifs.sql
 img
 api.js
+*.db
 
 # Logs
 logs
