@@ -22,8 +22,8 @@ const data = new SlashCommandBuilder()
     .addSubcommand(subcommand =>
         subcommand
             .setName('liste')
-            .setDescription('Affiche la liste de vos cartes et leur niveau !')
-            .addStringOption(option => option.setName('collection').setDescription('Collection à afficher')
+            .setDescription('Affiche la liste de vos cartes et leur niveau d\'une collection précise !')
+            .addStringOption(option => option.setName('collection').setDescription('Collection à afficher').setRequired(true)
                 .addChoices.apply(option,preLoadCollections())))
     .addSubcommand(subcommand =>
         subcommand
