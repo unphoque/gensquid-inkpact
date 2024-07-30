@@ -258,6 +258,10 @@ client.on('interactionCreate', async interaction => {
                 await interaction.deferReply();
                 await carte.giveCard(interaction)
                 break
+            case "givenum":
+                await interaction.deferReply();
+                await carte.giveCardNum(interaction)
+                break
             case "titre":
                 await interaction.deferReply({ephemeral:true});
                 await carte.changeTitle(interaction)

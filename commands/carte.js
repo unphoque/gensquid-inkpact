@@ -38,6 +38,13 @@ const data = new SlashCommandBuilder()
             .addStringOption(option => option.setName('carte').setDescription('La carte').setRequired(true)))
     .addSubcommand(subcommand =>
         subcommand
+            .setName('givenum')
+            .setDescription('Donne une carte à un joueur par son numéro (admin seulement)')
+            .addUserOption(option => option.setName('joueur').setDescription('Le joueur').setRequired(true))
+            .addStringOption(option => option.setName('collec').setDescription('Préfixe de la collection').setRequired(true))
+            .addStringOption(option => option.setName('num').setDescription('n° de la carte').setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
             .setName('titre')
             .setDescription('Change le titre d\'une carte (admin seulement)')
             .addStringOption(option => option.setName('collec').setDescription('Le préfixe de la collection (SO, PS, FAKE...)').setRequired(true))
@@ -269,6 +276,25 @@ const giveCard=async function(interaction){
 };
 
 module.exports.giveCard=giveCard
+
+const giveCardNum=async function(interaction){
+    if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
+
+    let user=interaction.options.getUser("joueur")
+    let collec=interaction.options.getString("collec")
+    let num=interaction.options.getString("num")
+    let sql=`SELECT co.NAME as COLLECNAME, * FROM COLLECTIONS co, CARDS ca WHERE ca.NUMBER="${num}" AND ca.COLLECTION="${collec}" AND ca.COLLECTION=co.SHORT`
+    await db.select(sql,async (res)=>{
+        if (res.length==1){
+            let cardinfo=res[0]
+            await addCardToInventory(user,cardinfo,interaction)
+        }else{
+            await interaction.editReply("La carte demandée n'existe pas.")
+        }
+    });
+};
+
+module.exports.giveCardNum=giveCardNum
 
 const changeTitle=async function(interaction){
     if(!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
