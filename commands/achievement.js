@@ -24,8 +24,8 @@ const data = new SlashCommandBuilder()
         subcommand
             .setName('remove')
             .setDescription('Retire un achievement (admin seulement)')
-            .addUserOption(option => option.setName('joueur').setDescription('Le joueur (optionnel)'))
-            .addStringOption(option => option.setName('id').setDescription('ID de l\'achievement').setRequired(true)))
+            .addStringOption(option => option.setName('id').setDescription('ID de l\'achievement').setRequired(true))
+            .addUserOption(option => option.setName('joueur').setDescription('Le joueur (optionnel)')))
 
 
 module.exports.data = data;
