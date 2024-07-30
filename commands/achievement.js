@@ -20,6 +20,12 @@ const data = new SlashCommandBuilder()
             .setDescription('Donne un achievement à un joueur (admin seulement)')
             .addUserOption(option => option.setName('joueur').setDescription('Le joueur').setRequired(true))
             .addStringOption(option => option.setName('id').setDescription('ID de l\'achievement').setRequired(true)))
+    .addSubcommand(subcommand =>
+        subcommand
+            .setName('remove')
+            .setDescription('Retire un achievement (admin seulement)')
+            .addUserOption(option => option.setName('joueur').setDescription('Le joueur (optionnel)'))
+            .addStringOption(option => option.setName('id').setDescription('ID de l\'achievement').setRequired(true)))
 
 
 module.exports.data = data;
@@ -38,6 +44,14 @@ const setBin = function (achValue, myList) {
     let i = achValue.indexOf('1')
     myList = myList.split('')
     myList.splice(i, 1, "1")
+    myList = myList.join('')
+    return myList
+}
+
+const setZero = function (achValue, myList) {
+    let i = achValue.indexOf('1')
+    myList = myList.split('')
+    myList.splice(i, 1, "0")
     myList = myList.join('')
     return myList
 }
@@ -140,6 +154,49 @@ const giveAchievement = async function (interaction) {
 }
 
 module.exports.giveAchievement = giveAchievement
+const removeAchievement = async function (interaction) {
+    if (!permissions.includes(interaction.user.id)) return interaction.editReply("Vous n'avez pas la permission pour exécuter cette commande.")
+
+    let achId = interaction.options.getString("id")
+    await db.select(`SELECT *
+                         FROM ACHIEVEMENTS
+                         WHERE ID = "${achId}"`, async (res) => {
+        if (res.length == 0) return interaction.editReply("L'achievement cherché n'existe pas.")
+        let achievement = res[0]
+        let joueur = interaction.options.getUser("joueur")
+        if (joueur){
+            let myList = await db.select(`SELECT ACHDATA
+                                          FROM PLAYERS
+                                          WHERE ID = "${joueur.id}"`, (res) => {
+                return res[0].ACHDATA
+            })
+            let newList = setBin(achievement.VALUE, myList)
+
+            await db.update(`UPDATE PLAYERS
+                             SET ACHDATA="${newList}"
+                             WHERE ID = "${joueur.id}"`)
+        }else{
+            let allAchData = await db.select(`SELECT ID, ACHDATA
+                                          FROM PLAYERS`, (res) => {
+                return res
+            })
+            for (const allAchDataKey in allAchData) {
+                let userid=allAchData[allAchDataKey].ID
+                let myList=allAchData[allAchDataKey].ACHDATA
+                let newList=setZero(achievement.VALUE,myList)
+                await db.update(`UPDATE PLAYERS
+                             SET ACHDATA="${newList}"
+                             WHERE ID = "${userid}"`)
+            }
+        }
+
+
+        interaction.editReply("L'achievement a été retiré avec succès.")
+    })
+
+}
+
+module.exports.removeAchievement = removeAchievement
 
 let equivalence = {
     "SEASNAILS": ["SEASNAILS1K", "SEASNAILS10K", "SEASNAILS100K", "SEASNAILS1M"],
