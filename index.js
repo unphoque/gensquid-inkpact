@@ -318,7 +318,7 @@ client.on('interactionCreate', async interaction => {
         switch (interaction.options.getSubcommand()) {
             case "l":
             case "liste":
-                await interaction.deferReply();
+                await interaction.deferReply({ephemeral:true});
                 await achievement.showAchievementList(interaction)
                 break
             case "i":
@@ -328,8 +328,13 @@ client.on('interactionCreate', async interaction => {
                 break
             case "g":
             case "give":
-                await interaction.deferReply();
+                await interaction.deferReply({ephemeral:true});
                 await achievement.giveAchievement(interaction)
+                break
+            case "r":
+            case "remove":
+                await interaction.deferReply({ephemeral:true});
+                await achievement.removeAchievement(interaction)
                 break
         }
     }
