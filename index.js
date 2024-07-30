@@ -151,6 +151,7 @@ client.on("messageCreate", async message => {
                     added=200
                     achList.push("RECOMP200")
                 }
+                if (res[0].TOTALTODAY==4)achList.push("RECOMPDAILY")
                 await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+added+", TOTALTODAY=TOTALTODAY+1, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
 
                 if (res[0].LASTMESSAGE<d-172800000)await db.update(`UPDATE PLAYERS SET CONSECUTIVEDAYS=1 WHERE ID="${message.author.id}"`)
