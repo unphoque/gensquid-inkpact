@@ -10,6 +10,8 @@ const sequelize = new Sequelize({
     },
 });
 
+console.log(__dirname+'/gensquid_impact.db')
+
 const select = async function(sql,callback){
     return await sequelize.query(sql, { type: QueryTypes.SELECT }).then(callback)
 };
