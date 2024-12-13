@@ -37,7 +37,7 @@ const rest = new REST({ version: '9' }).setToken(CONFIG.DISCORD_TOKEN);
 })();
 
 //application
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageEmbed} = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 const schedule=require('node-schedule');
 
@@ -179,6 +179,16 @@ client.on("messageCreate", async message => {
             }
         }
     }
+
+    let content=message.content.toLowerCase()
+    if(content.includes("bientôt") || content.includes("bientot")){
+        let st=1830294000000
+        let end=2114377200000
+        let date = new Date(st + Math.random() * (end - st))
+        let embed=new MessageEmbed().setDescription(`<t:${date}>`)
+        message.reply({embeds: [embed]})
+    }
+
 });
 
 const reloadAtMidnight=function(){
