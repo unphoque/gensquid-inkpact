@@ -184,8 +184,8 @@ client.on("messageCreate", async message => {
     if(content.includes("bientôt") || content.includes("bientot")){
         let st=1830294000000
         let end=2114377200000
-        let date = new Date(st + Math.random() * (end - st))+1
-        let embed=new MessageEmbed().setDescription(`<t:${date}>`)
+        let date = new Date(st + Math.random() * (end - st))
+        let embed=new MessageEmbed().setDescription(`<t:${date.getTime()}>`)
         message.reply({embeds: [embed]})
     }
 
