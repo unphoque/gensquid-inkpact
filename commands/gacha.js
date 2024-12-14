@@ -193,24 +193,32 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 if(forcedRarity){
                     let collecKeys=Object.keys(collections)
                     collecKeys.splice(collecKeys.indexOf("FAKE"),1)
+                    if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("PM"),1)
                     if(rarityDraw=="✰")collecKeys.splice(collecKeys.indexOf("SO"),1)
                     let randCollec = Math.floor(Math.random() * collecKeys.length)
                     collecDraw=collecKeys[randCollec]
                 }else{
-                    let randCollec = Math.floor(Math.random() * 100)
-                    let probaupColl = ["", 0]
-                    let otherColl = []
-                    for (const [co, p] of Object.entries(collections)) {
-                        if (p["PROBAUP"])
-                            probaupColl = [co, p["PROBAUP"]]
-                        else if (co != "FAKE")
-                            otherColl.push(co)
+                    let randPM = Math.floor(Math.random() * 100)
+                    if(randPM<10){
+                        collecDraw=="PM"
+                        rarityDraw="✰"
                     }
-                    if (randCollec < probaupColl[1]) {
-                        collecDraw = probaupColl[0]
-                    } else {
-                        randCollec = Math.floor(randCollec * otherColl.length / 100)
-                        collecDraw = otherColl[randCollec]
+                    else{
+                        let randCollec = Math.floor(Math.random() * 100)
+                        let probaupColl = ["", 0]
+                        let otherColl = []
+                        for (const [co, p] of Object.entries(collections)) {
+                            if (p["PROBAUP"])
+                                probaupColl = [co, p["PROBAUP"]]
+                            else if (co != "FAKE" && co != "PM")
+                                otherColl.push(co)
+                        }
+                        if (randCollec < probaupColl[1]) {
+                            collecDraw = probaupColl[0]
+                        } else {
+                            randCollec = Math.floor(randCollec * otherColl.length / 100)
+                            collecDraw = otherColl[randCollec]
+                        }
                     }
                 }
             }
@@ -222,8 +230,8 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 player.LOYALTYCARD++
             }
 
-            if(rarityDraw=="✰")achToCheck.push("MULTIPLE10SEC")
-            if(!achToCheck.includes(`COLLEC${collecDraw}`) && rarityDraw!="F")achToCheck.push(`COLLEC${collecDraw}`)
+            if(rarityDraw=="✰" && collecDraw!="PM")achToCheck.push("MULTIPLE10SEC")
+            if(!achToCheck.includes(`COLLEC${collecDraw}`) && rarityDraw!="F" && collecDraw!="PM")achToCheck.push(`COLLEC${collecDraw}`)
 
             let randCard = Math.floor(Math.random() * 100)
             let currentCardProba = 0;
@@ -293,6 +301,9 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
     let cardcollec = cardinfo.COLLECTION
     let cardid = cardinfo.ID
     let cardnumber = cardinfo.NUMBER
+
+    if(cardcollec=="PM")rarityinfo.compensation=10
+
     let ret = await db.select(sql, async (res) => {
         if (res.length == 0) {
             let sql = "INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY) VALUES ('" + user.id + "','" + cardinfo.ID + "', 1)"
