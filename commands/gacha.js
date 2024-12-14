@@ -35,6 +35,23 @@ db.select("SELECT * FROM COLLECTIONS WHERE PROBAUP > 0 ORDER BY PROBAUP DESC LIM
     console.log("Guaranted collection: " + guarantedCollec)
 });
 
+schedule.scheduleJob('0 4 * * 1', async () => {
+    await db.select("SELECT * FROM COLLECTIONS", async (res) => {
+        let collections=[]
+        for (let i = 0; i < res.length; i++) {
+            collections.push(res[i].SHORT)
+        }
+        collections.splice(collections.indexOf("FAKE"),1)
+        collections.splice(collections.indexOf("PM"),1)
+        collections.splice(collections.indexOf(guarantedCollec),1)
+
+        let randCollec=Math.floor(Math.random()*collections.length)
+        guarantedCollec=collections[randCollec]
+        await db.update("UPDATE COLLECTIONS SET PROBAUP=0",()=>{})
+        await db.update(`UPDATE COLLECTIONS SET PROBAUP=66 WHERE SHORT="${guarantedCollec}"`,()=>{})
+    })
+})
+
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const {toFileString, setEmbedColor} = require("./util");
 
@@ -98,7 +115,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
     if (chaosRand < 100) {
         player.price = 0
         chaosStatus = "free"
-    } else if (chaosRand < 100+probaF) {
+    } else if (chaosRand < 110){
+        chaosStatus = "rare"
+    } else if (chaosRand < 110+probaF) {
         chaosStatus = "busted"
         db.update(`UPDATE GLOBAL SET PROBAF=100`,()=>{})
         achToCheck.push("RARITYF")
@@ -174,19 +193,29 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     rarityDraw = forcedRarity
                 }else{
                     let randRarity = Math.floor(Math.random() * 100)
-                    let currentRarityProba = 0
-                    for (const [r, i] of Object.entries(rarity)) {
-                        currentRarityProba += i.proba
-                        if (randRarity < currentRarityProba) {
-                            rarityDraw = r
-                            break
+                    if(chaosStatus=="rare"){
+                        if(i==9)rarityDraw="✰"
+                        else if(randRarity<65)rarityDraw="S"
+                        else if(randRarity<95)rarityDraw="X"
+                        else rarityDraw="✰"
+                        forcedRarity=rarityDraw
+                    }else{
+                        let currentRarityProba = 0
+                        for (const [r, i] of Object.entries(rarity)) {
+                            currentRarityProba += i.proba
+                            if (randRarity < currentRarityProba) {
+                                rarityDraw = r
+                                break
+                            }
+                        }
+                        if (rarityDraw == "X") {
+                            player.PITYX = -1
+                        } else if (rarityDraw == "S") {
+                            player.PITYS = -1
                         }
                     }
-                    if (rarityDraw == "X") {
-                        player.PITYX = -1
-                    } else if (rarityDraw == "S") {
-                        player.PITYS = -1
-                    }
+
+
                 }
 
 
