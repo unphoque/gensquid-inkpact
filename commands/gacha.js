@@ -306,7 +306,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
 
     let ret = await db.select(sql, async (res) => {
         if (res.length == 0) {
-            let sql = "INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY) VALUES ('" + user.id + "','" + cardinfo.ID + "', 1)"
+            let sql = `INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY) VALUES ('${user.id}','${cardinfo.ID}', 1)`
             await db.insert(sql, () => {
             })
 
