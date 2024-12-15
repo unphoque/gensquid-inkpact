@@ -76,8 +76,8 @@ const proba=require("./commands/proba")
 const blackmarket=require("./commands/blackmarket")
 const achievement=require("./commands/achievement")
 
-const dateMaintenance=Date.UTC(2024,6,27,6,0,0,0)
-const msgMaintenance="Désolé, j'suis en vacances ! Des bisous et à **BIENTÔT.**"
+const dateMaintenance=Date.UTC(2024,11,16,8,0,0,0)
+const msgMaintenance="Temps mort, je teste des trucs, je relance plus tard."
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
