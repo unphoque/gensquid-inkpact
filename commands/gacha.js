@@ -116,8 +116,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
     if (chaosRand < 100) {
         player.price = 0
         chaosStatus = "free"
-    } else if (chaosRand < 110){
+    } else if (chaosRand < 110 && nbDraw==10){
         chaosStatus = "rare"
+        achToCheck.push("RAREMULTIPLE")
     } else if (chaosRand < 110+probaF) {
         chaosStatus = "busted"
         db.update(`UPDATE GLOBAL SET PROBAF=100`,()=>{})
