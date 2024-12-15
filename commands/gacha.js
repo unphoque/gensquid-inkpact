@@ -230,7 +230,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 }else{
                     let randPM = Math.floor(Math.random() * 100)
                     if(randPM<10){
-                        collecDraw=="PM"
+                        collecDraw="PM"
                         rarityDraw="✰"
                     }
                     else{
