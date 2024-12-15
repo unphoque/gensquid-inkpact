@@ -199,7 +199,6 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                         else if(randRarity<65)rarityDraw="S"
                         else if(randRarity<95)rarityDraw="X"
                         else rarityDraw="✰"
-                        forcedRarity=rarityDraw
                     }else{
                         let currentRarityProba = 0
                         for (const [r, i] of Object.entries(rarity)) {
@@ -220,7 +219,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 }
 
 
-                if(forcedRarity){
+                if(forcedRarity || chaosStatus=="rare"){
                     let collecKeys=Object.keys(collections)
                     collecKeys.splice(collecKeys.indexOf("FAKE"),1)
                     if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("PM"),1)
