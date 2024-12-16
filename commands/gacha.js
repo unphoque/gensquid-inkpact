@@ -331,8 +331,9 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
     let cardcollec = cardinfo.COLLECTION
     let cardid = cardinfo.ID
     let cardnumber = cardinfo.NUMBER
+    let compensation=rarityinfo.compensation
 
-    if(cardcollec=="PM")rarityinfo.compensation=10
+    if(cardcollec=="PM")compensation=10
 
     let ret = await db.select(sql, async (res) => {
         if (res.length == 0) {
@@ -356,7 +357,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
         } else {
             if (res[0].CARDLEVEL == rarityinfo.maxlv) {
                 if (chaosStatus != "busted") {
-                    let sql = "UPDATE PLAYERS SET SEASNAILS=SEASNAILS+" + rarityinfo.compensation + " WHERE ID='" + user.id + "'";
+                    let sql = "UPDATE PLAYERS SET SEASNAILS=SEASNAILS+" + compensation + " WHERE ID='" + user.id + "'";
                     await db.update(sql, () => {
                     })
                 }
@@ -376,7 +377,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                         "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " (max)" : "") +
-                        (chaosStatus == "busted" ? "" : "\n*Compensation : " + rarityinfo.compensation + " coquillage" + (rarityinfo.compensation == 1 ? "*" : "s*")))
+                        (chaosStatus == "busted" ? "" : "\n*Compensation : " + compensation + " coquillage" + (rarityinfo.compensation == 1 ? "*" : "s*")))
                     .setImage("attachment://" + name)
                 embed=setEmbedColor(cardinfo.RARITY, embed)
                 return [embed, attachement]
