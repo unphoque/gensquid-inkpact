@@ -332,6 +332,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
     let cardid = cardinfo.ID
     let cardnumber = cardinfo.NUMBER
     let compensation=rarityinfo.compensation
+    let cardmax=(cardinfo.MAX<10?"0"+cardinfo.MAX:cardinfo.MAX)
 
     if(cardcollec=="PM")compensation=10
 
@@ -348,7 +349,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 .setTitle(cardinfo.NAME)
                 .setDescription(`*${cardtitle}*`+
                     "\n\n**NOUVELLE CARTE !**" +
-                    "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
+                    "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                     "\n**" + cardinfo.RARITY + "**" +
                     (cardinfo.RARITY != "✰" ? "\nNiveau 1 " + (cardinfo.RARITY == "C" ? "(max)" : "0/" + rarityinfo.tonextlv) : ""))
                 .setImage("attachment://" + name)
@@ -374,7 +375,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription(`*${cardtitle}*`+
-                        "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
+                        "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " (max)" : "") +
                         (chaosStatus == "busted" ? "" : "\n*Compensation : " + compensation + " coquillage" + (rarityinfo.compensation == 1 ? "*" : "s*")))
@@ -395,7 +396,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                     .setTitle(cardinfo.NAME)
                     .setDescription(`*${cardtitle}*`+
                         "\n\n**NIVEAU SUP !**" +
-                        "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
+                        "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + newlv + (newlv == rarityinfo.maxlv ? " (max)" : " 0/" + rarityinfo.tonextlv) : ""))
                     .setImage("attachment://" + name)
@@ -413,7 +414,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
                 let embed = new MessageEmbed()
                     .setTitle(cardinfo.NAME)
                     .setDescription(`*${cardtitle}*`+
-                        "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardinfo.MAX +
+                        "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " " + (res[0].NBPOSSESSED + 1) + "/" + rarityinfo.tonextlv : ""))
                     .setImage("attachment://" + name)
