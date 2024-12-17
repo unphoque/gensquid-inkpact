@@ -304,6 +304,7 @@ const changeTitle=async function(interaction){
     let collec=interaction.options.getString("collec")
     let num=interaction.options.getString("num")
     let titre=interaction.options.getString("titre")
+    titre=titre.replaceAll('"',"\"")
     let sql=`SELECT * FROM CARDS WHERE COLLECTION="${collec}" AND NUMBER="${num}"`
     await db.select(sql,async (res)=>{
         if (res.length==1){
