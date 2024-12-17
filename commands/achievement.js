@@ -268,7 +268,7 @@ const checkAchievementsToGive = async function (guild, user, achievementList) {
                                  WHERE ID = "${user.id}"`, () => {
     })
 
-    if (cs) checkSecret(guild, user, myList, allAchievements)
+    //if (cs) checkSecret(guild, user, myList, allAchievements)
 
 }
 
