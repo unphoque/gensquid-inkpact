@@ -257,7 +257,8 @@ const addCardToInventory = async function(user,cardinfo,interaction){
             }
         }
     })
-    await achievement.checkAchievementsToGive(interaction.guild,interaction.user,["LEVEL","RARITY","MULTIPLE","SEASNAILS","CARDS",`COLLEC${cardcollec}`])
+    // a corriger
+    //await achievement.checkAchievementsToGive(interaction.guild,interaction.user,["LEVEL","RARITY","MULTIPLE","SEASNAILS","CARDS",`COLLEC${cardcollec}`])
 }
 
 const giveCard=async function(interaction){
