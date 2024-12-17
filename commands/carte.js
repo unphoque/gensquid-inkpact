@@ -304,11 +304,11 @@ const changeTitle=async function(interaction){
     let collec=interaction.options.getString("collec")
     let num=interaction.options.getString("num")
     let titre=interaction.options.getString("titre")
-    titre=titre.replaceAll('"',"\"")
+    let titremod=titre.replaceAll('"','""')
     let sql=`SELECT * FROM CARDS WHERE COLLECTION="${collec}" AND NUMBER="${num}"`
     await db.select(sql,async (res)=>{
         if (res.length==1){
-            let sql = `UPDATE CARDS SET TITLE="${titre}" WHERE COLLECTION="${collec}" AND NUMBER="${num}"`
+            let sql = `UPDATE CARDS SET TITLE="${titremod}" WHERE COLLECTION="${collec}" AND NUMBER="${num}"`
             let cardname=res[0].NAME
             await db.update(sql, async()=>{
                 return await interaction.editReply(`Le nouveau titre de la carte ${cardname} est ${titre}`)
