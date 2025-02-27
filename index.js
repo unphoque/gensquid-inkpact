@@ -126,6 +126,40 @@ client.on('ready', async () => {
         blackmarket.showWeekly(channel)
     })*/
 
+    schedule.scheduleJob('0 4 * * 1', async () => {
+
+        let guarantedCollec = ""
+        await db.select("SELECT * FROM COLLECTIONS WHERE PROBAUP > 0 ORDER BY PROBAUP DESC LIMIT 1", (res) => {
+            if (res.length)
+                guarantedCollec = res[0].SHORT
+            console.log("Guaranted collection: " + guarantedCollec)
+        });
+
+        await db.select("SELECT * FROM COLLECTIONS", async (res) => {
+            let collections=[]
+            for (let i = 0; i < res.length; i++) {
+                collections.push(res[i].SHORT)
+            }
+            collections.splice(collections.indexOf("FAKE"),1)
+            collections.splice(collections.indexOf("PM"),1)
+            collections.splice(collections.indexOf("SAKE"),1)
+            collections.splice(collections.indexOf(guarantedCollec),1)
+
+            let randCollec=Math.floor(Math.random()*collections.length)
+            guarantedCollec=collections[randCollec]
+            await db.update("UPDATE COLLECTIONS SET PROBAUP=0",()=>{})
+            await db.update(`UPDATE COLLECTIONS SET PROBAUP=66 WHERE SHORT="${guarantedCollec}"`,()=>{})
+
+            //update rarities.json
+            for (const c of res) {
+                collections[c.NAME]={}
+                collections[c.NAME]["choice"] = {name:c.SHORT, value:c.SHORT};
+            }
+            fs.writeFile("./collections.json", JSON.stringify(collections),"utf8",()=>console.log("Rarities updated"));
+
+        })
+    })
+
 });
 
 //MESSAGE

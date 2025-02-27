@@ -36,23 +36,6 @@ db.select("SELECT * FROM COLLECTIONS WHERE PROBAUP > 0 ORDER BY PROBAUP DESC LIM
     console.log("Guaranted collection: " + guarantedCollec)
 });
 
-schedule.scheduleJob('0 4 * * 1', async () => {
-    await db.select("SELECT * FROM COLLECTIONS", async (res) => {
-        let collections=[]
-        for (let i = 0; i < res.length; i++) {
-            collections.push(res[i].SHORT)
-        }
-        collections.splice(collections.indexOf("FAKE"),1)
-        collections.splice(collections.indexOf("PM"),1)
-        collections.splice(collections.indexOf(guarantedCollec),1)
-
-        let randCollec=Math.floor(Math.random()*collections.length)
-        guarantedCollec=collections[randCollec]
-        await db.update("UPDATE COLLECTIONS SET PROBAUP=0",()=>{})
-        await db.update(`UPDATE COLLECTIONS SET PROBAUP=66 WHERE SHORT="${guarantedCollec}"`,()=>{})
-    })
-})
-
 const {MessageEmbed, MessageAttachment} = require("discord.js");
 const {toFileString, setEmbedColor} = require("./util");
 
@@ -87,6 +70,7 @@ const showProbas = async function (interaction) {
 module.exports.showProbas = showProbas
 
 const basePrice = 20;
+const specialCollec = "SAKE"
 
 const checkGacha = async function (interaction) {
     let user = interaction.user;
@@ -229,8 +213,11 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     collecDraw=collecKeys[randCollec]
                 }else{
                     let randPM = Math.floor(Math.random() * 100)
-                    if(randPM<10){
-                        collecDraw="PM"
+
+                    //A CHANGER POUR APRES L'ANNIV DE PYON
+
+                    if(randPM<100){
+                        collecDraw=specialCollec
                         rarityDraw="✰"
                     }
                     else{
@@ -240,7 +227,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                         for (const [co, p] of Object.entries(collections)) {
                             if (p["PROBAUP"])
                                 probaupColl = [co, p["PROBAUP"]]
-                            else if (co != "FAKE" && co != "PM")
+                            else if (co != "FAKE" && co != specialCollec)
                                 otherColl.push(co)
                         }
                         if (randCollec < probaupColl[1]) {
@@ -260,8 +247,8 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 player.LOYALTYCARD++
             }
 
-            if(rarityDraw=="✰" && collecDraw!="PM")achToCheck.push("MULTIPLE10SEC")
-            if(!achToCheck.includes(`COLLEC${collecDraw}`) && rarityDraw!="F" && collecDraw!="PM")achToCheck.push(`COLLEC${collecDraw}`)
+            if(rarityDraw=="✰" && collecDraw!=specialCollec)achToCheck.push("MULTIPLE10SEC")
+            if(!achToCheck.includes(`COLLEC${collecDraw}`) && rarityDraw!="F" && collecDraw!=specialCollec)achToCheck.push(`COLLEC${collecDraw}`)
 
             let randCard = Math.floor(Math.random() * 100)
             let currentCardProba = 0;
@@ -334,7 +321,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
     let compensation=rarityinfo.compensation
     let cardmax=(cardinfo.MAX<10?"0"+cardinfo.MAX:cardinfo.MAX)
 
-    if(cardcollec=="PM")compensation=10
+    if(cardcollec==specialCollec)compensation=10
 
     let ret = await db.select(sql, async (res) => {
         if (res.length == 0) {
