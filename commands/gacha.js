@@ -209,6 +209,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     collecKeys.splice(collecKeys.indexOf("FAKE"),1)
                     if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("PM"),1)
                     if(rarityDraw=="✰")collecKeys.splice(collecKeys.indexOf("SO"),1)
+                    if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("SAKE"),1)
                     let randCollec = Math.floor(Math.random() * collecKeys.length)
                     collecDraw=collecKeys[randCollec]
                 }else{
@@ -216,7 +217,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 
                     //A CHANGER POUR APRES L'ANNIV DE PYON
 
-                    if(randPM<100){
+                    if(randPM<0){
                         collecDraw=specialCollec
                         rarityDraw="✰"
                     }
