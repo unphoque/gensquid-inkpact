@@ -217,7 +217,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 
                     //A CHANGER POUR APRES L'ANNIV DE PYON
 
-                    if(randPM<0){
+                    if(randPM<4){
                         collecDraw=specialCollec
                         rarityDraw="✰"
                     }
