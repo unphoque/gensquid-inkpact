@@ -214,7 +214,7 @@ client.on("messageCreate", async message => {
         }
     }
 
-    let content=message.content.toLowerCase()
+    /*let content=message.content.toLowerCase()
     if(content.includes("bientôt") || content.includes("bientot")){
         let st=1830294000000
         let end=2114377200000
@@ -222,7 +222,7 @@ client.on("messageCreate", async message => {
         date.setUTCFullYear(2028+Math.random()*(2037-2028))
         let embed=new MessageEmbed().setDescription(`<t:${date.getTime()}>`)
         message.reply({embeds: [embed]})
-    }
+    }*/
 
 });
 
