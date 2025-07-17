@@ -274,7 +274,6 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             }
 
             if (randCard >= currentCardProba) {
-                console.log(collecDraw+" - "+rarityDraw)
                 if (collections[collecDraw][rarityDraw].length) {
                     randCard = Math.floor(randCard * collections[collecDraw][rarityDraw].length / 100)
                     cardDraw = collections[collecDraw][rarityDraw][randCard]
@@ -284,7 +283,6 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 }
             }
             allCards.push(cardDraw)
-            console.debug(cardDraw)
         }
         await saveAndShowGacha(interaction, player, allCards, cards, chaosStatus)
         achToCheck=achToCheck.concat(["CARDS","MULTIPLE","LEVEL","RARITY","SEASNAILS"])
