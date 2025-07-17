@@ -6,7 +6,6 @@ modifs.sql
 img
 api.js
 *.db
-collections.json
 
 # Logs
 logs
