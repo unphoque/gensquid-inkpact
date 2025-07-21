@@ -333,7 +333,7 @@ const addCardToInventory = async function (user, cardinfo, chaosStatus) {
     let compensation=rarityinfo.compensation
     let cardmax=(cardinfo.MAX<10?"0"+cardinfo.MAX:cardinfo.MAX)
 
-    if(cardcollec=="PM" || cardcollec==specialCollec)compensation=10
+    if(onlySecret.includes(cardcollec) || cardcollec==specialCollec)compensation=10
 
     let ret = await db.select(sql, async (res) => {
         if (res.length == 0) {
