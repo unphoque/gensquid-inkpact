@@ -212,7 +212,6 @@ const collecIgnore=["FAKE","SAKE"]
 
 for (const collectionsKey in collections) {
     let short = collections[collectionsKey].choice.name
-    if (collecIgnore.includes(short)) continue
     equivalence["COLLEC" + short] = [`FULL${short}`, `PERFECT${short}`]
 }
 
@@ -249,6 +248,9 @@ const checkAchievementsToGive = async function (guild, user, achievementList) {
     for (let i = 0; i < achievementList.length; i++) {
         let achId = achievementList[i]
         let achievement = allAchievements[achId]
+
+        console.log(`ACHIEVEMENT : ${achId}`)
+        if(!achievement)continue
         if (checkBin(achievement.VALUE, myList)){
             if (achId == "CARDS200") cs = true
             continue
