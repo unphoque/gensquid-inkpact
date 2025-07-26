@@ -120,6 +120,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             achToCheck.push("BMF")
             if(player.price==600)achToCheck.push("BM600F")
         }
+
+    } else if (chaosRand < 110+probaF+500) {
+        chaosStatus="allowpm"
     } else if (!forcedRarity) {
         let loyaltyRand = Math.floor(Math.random() * 1000)
         if (loyaltyRand < player.LOYALTYCARD) {
@@ -129,6 +132,8 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             achToCheck.push("FIDELITE")
         }
     }
+
+    console.log(`STATUT : ${chaosStatus} - Rand = ${chaosRand}`)
 
     if(chaosStatus!="busted")
         db.update(`UPDATE GLOBAL SET PROBAF=PROBAF+${nbDraw*4}`,()=>{})
@@ -152,10 +157,18 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             }
             cards[c.ID] = c
         }
+
+        let thisDrawCollec=Object.assign({},collections)
+        if(!["allowpm","rare","free"].includes(chaosStatus)){
+            delete thisDrawCollec["SAKE"]
+            delete thisDrawCollec["PM"]
+        }
+
         let allCards = []
         for (let i = 0; i < nbDraw; i++) {
             let rarityDraw;
             let collecDraw;
+
             if(chaosStatus=="busted"){
                 forcedRarity="F"
                 rarityDraw="F"
@@ -213,7 +226,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 
 
                 if(forcedRarity || chaosStatus=="rare"){
-                    let collecKeys=Object.keys(collections)
+                    let collecKeys=Object.keys(thisDrawCollec)
                     collecKeys.splice(collecKeys.indexOf("FAKE"),1)
                     if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("PM"),1)
                     if(rarityDraw=="✰")collecKeys.splice(collecKeys.indexOf("SO"),1)
@@ -221,34 +234,34 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     let randCollec = Math.floor(Math.random() * collecKeys.length)
                     collecDraw=collecKeys[randCollec]
                 }else{
-                    let randPM = Math.floor(Math.random() * 100)
+                    /*let randPM = Math.floor(Math.random() * 100)
 
                     //COLLEC SPECIALE
                     if(randPM<0){
                         collecDraw=specialCollec
                         rarityDraw="✰"
                     }
-                    else{
-                        let randCollec = Math.floor(Math.random() * 100)
+                    else{*/
                         let probaupColl = ["", 0]
                         let otherColl = []
-                        for (const [co, p] of Object.entries(collections)) {
+                        for (const [co, p] of Object.entries(thisDrawCollec)) {
                             if (p["PROBAUP"])
                                 probaupColl = [co, p["PROBAUP"]]
                             else if (co != "FAKE" && co != specialCollec)
                                 otherColl.push(co)
                         }
-                        if (randCollec < probaupColl[1]) {
-                            collecDraw = probaupColl[0]
-                        } else {
-                            randCollec = Math.floor(randCollec * otherColl.length / 100)
-                            collecDraw = otherColl[randCollec]
-                        }
 
-                        if(onlySecret.includes(collecDraw))
-                            rarityDraw="✰"
+                        do{
+                            let randCollec = Math.floor(Math.random() * 100)
+                            if (randCollec < probaupColl[1]) {
+                                collecDraw = probaupColl[0]
+                            } else {
+                                randCollec = Math.floor(randCollec * otherColl.length / 100)
+                                collecDraw = otherColl[randCollec]
+                            }
+                        }while (onlySecret.includes(collecDraw) && rarityDraw!="✰")
 
-                    }
+                    //}
                 }
             }
             if (!forcedRarity) {
@@ -274,9 +287,9 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             }
 
             if (randCard >= currentCardProba) {
-                if (collections[collecDraw][rarityDraw].length) {
-                    randCard = Math.floor(randCard * collections[collecDraw][rarityDraw].length / 100)
-                    cardDraw = collections[collecDraw][rarityDraw][randCard]
+                if (thisDrawCollec[collecDraw][rarityDraw].length) {
+                    randCard = Math.floor(randCard * thisDrawCollec[collecDraw][rarityDraw].length / 100)
+                    cardDraw = thisDrawCollec[collecDraw][rarityDraw][randCard]
                 } else {
                     randCard = Math.floor(randCard * rarity[rarityDraw].cards.length / 100)
                     cardDraw = rarity[rarityDraw].cards[randCard]
