@@ -2,7 +2,8 @@ const {MessageEmbed}=require("discord.js")
 
 const toFileString=function(txt){
     txt=txt.replaceAll(" ","_")
-    txt=txt.replaceAll("'","_")
+    txt=txt.replaceAll("'","_").replaceAll("\"","_")
+    txt=txt.replaceAll(",","_")
     txt=txt.replaceAll("(","").replaceAll(")","")
     txt=txt.replaceAll("&","_")
     txt=txt.replaceAll("?","_").replaceAll("!","_")
