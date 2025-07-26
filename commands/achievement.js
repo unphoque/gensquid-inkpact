@@ -208,9 +208,11 @@ let equivalence = {
     "LEVEL": ["LEVELB", "LEVELA", "LEVELS", "LEVELX"]
 }
 
+const collecIgnore=["FAKE","SAKE"]
+
 for (const collectionsKey in collections) {
     let short = collections[collectionsKey].choice.name
-    if (short == "FAKE") continue
+    if (collecIgnore.includes(short)) continue
     equivalence["COLLEC" + short] = [`FULL${short}`, `PERFECT${short}`]
 }
 
@@ -251,6 +253,7 @@ const checkAchievementsToGive = async function (guild, user, achievementList) {
             if (achId == "CARDS200") cs = true
             continue
         }
+
 
         let achProgress = await checkAchievementProgress(user, achId)
 
