@@ -199,7 +199,7 @@ const removeAchievement = async function (interaction) {
 module.exports.removeAchievement = removeAchievement
 
 let equivalence = {
-    "SEASNAILS": ["SEASNAILS1K", "SEASNAILS10K", "SEASNAILS100K", "SEASNAILS1M"],
+    "SEASNAILS": ["SEASNAILS1K", "SEASNAILS10K", "SEASNAILS100K", "SEASNAILS250K"],
     "CARDS": ["CARDS10", "CARDS25", "CARDS50", "CARDS100", "CARDS200"],
     "RARITY": ["RARITYS", "RARITYX", "RARITYSEC", "RARITYF"],
     "BM": ["BM1", "BM10", "BM25"],
@@ -318,12 +318,15 @@ const checkAchievementProgress = async function (user, achId) {
         })
         let totaltocheck = 1000
         switch (achId) {
-            case "SEASNAILS1M":
-                totaltocheck *= 10
+            case "SEASNAILS250K":
+                totaltocheck = 250000
+                break
             case "SEASNAILS100K":
-                totaltocheck *= 10
+                totaltocheck = 100000
+                break
             case "SEASNAILS10K":
-                totaltocheck *= 10
+                totaltocheck = 10000
+                break
         }
         return (totalss < totaltocheck ? [false, `${totalss}/${totaltocheck} (${Math.round(totalss * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", , false])
 
