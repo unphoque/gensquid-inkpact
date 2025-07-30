@@ -128,6 +128,8 @@ client.on('ready', async () => {
 
     schedule.scheduleJob('0 4 * * 1', async () => {
 
+        if(Date.now()<dateMaintenance) return;
+
         let guarantedCollec = ""
         await db.select("SELECT * FROM COLLECTIONS WHERE PROBAUP > 0 ORDER BY PROBAUP DESC LIMIT 1", (res) => {
             if (res.length)
