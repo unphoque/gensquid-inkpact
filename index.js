@@ -190,7 +190,20 @@ client.on("messageCreate", async message => {
                 if (res[0].TOTALTODAY==4)achList.push("RECOMPDAILY")
                 await db.update("UPDATE PLAYERS SET SEASNAILS=SEASNAILS+"+added+", TOTALTODAY=TOTALTODAY+1, LASTMESSAGE="+d+" WHERE ID='"+message.author.id+"'", ()=>{});
 
-                if (res[0].LASTMESSAGE<d-172800000)await db.update(`UPDATE PLAYERS SET CONSECUTIVEDAYS=1 WHERE ID="${message.author.id}"`)
+                const oneDay = 1000 * 60 * 60 * 24;
+                const diffInTime = d - res[0].LASTMESSAGE;
+                const diffInDays = Math.floor(diffInTime / oneDay);
+
+                if (diffInDays>=2){
+                    let consDays=res[0].CONSECUTIVEDAYS;
+                    let fact=1
+                    for (let i = 1; i < diffInDays || i<7; i++) {
+                        fact*=i
+                    }
+                    consDays-=fact*2
+                    if (consDays<1)consDays=1
+                    await db.update(`UPDATE PLAYERS SET CONSECUTIVEDAYS=${consDays} WHERE ID="${message.author.id}"`)
+                }
                 else if(res[0].TOTALTODAY==0){
                     await db.update(`UPDATE PLAYERS SET CONSECUTIVEDAYS=CONSECUTIVEDAYS+1 WHERE ID="${message.author.id}"`)
 
