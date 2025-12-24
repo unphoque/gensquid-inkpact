@@ -245,7 +245,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     let randPM = Math.floor(Math.random() * 100)
 
                     //COLLEC SPECIALE
-                    if(randPM<10){
+                    if("PM" in thisDrawCollec && randPM<10){
                         collecDraw=specialCollec
                         rarityDraw="✰"
                     }
