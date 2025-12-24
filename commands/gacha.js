@@ -295,13 +295,19 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             }
 
             if (randCard >= currentCardProba) {
-                if (thisDrawCollec[collecDraw][rarityDraw].length) {
-                    randCard = Math.floor(randCard * thisDrawCollec[collecDraw][rarityDraw].length / 100)
-                    cardDraw = thisDrawCollec[collecDraw][rarityDraw][randCard]
-                } else {
-                    randCard = Math.floor(randCard * rarity[rarityDraw].cards.length / 100)
-                    cardDraw = rarity[rarityDraw].cards[randCard]
+                try{
+                    if (thisDrawCollec[collecDraw][rarityDraw].length) {
+                        randCard = Math.floor(randCard * thisDrawCollec[collecDraw][rarityDraw].length / 100)
+                        cardDraw = thisDrawCollec[collecDraw][rarityDraw][randCard]
+                    } else {
+                        randCard = Math.floor(randCard * rarity[rarityDraw].cards.length / 100)
+                        cardDraw = rarity[rarityDraw].cards[randCard]
+                    }
+                }catch(e){
+                    console.log(`collec = ${collecDraw} - rarity = ${rarityDraw}`)
+                    throw e
                 }
+
             }
             allCards.push(cardDraw)
         }
