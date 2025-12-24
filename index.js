@@ -76,8 +76,8 @@ const proba=require("./commands/proba")
 const blackmarket=require("./commands/blackmarket")
 const achievement=require("./commands/achievement")
 
-const dateMaintenance=Date.UTC(2025,6,30,4,0,0,0)
-const msgMaintenance="C'est les vacances ! Je reviens bien- *User disconnected from the channel.*"
+const dateMaintenance=Date.UTC(2025,11,25,4,0,0,0)
+const msgMaintenance="# HO HO HO !"
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);

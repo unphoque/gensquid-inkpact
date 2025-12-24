@@ -77,7 +77,7 @@ const showProbas = async function (interaction) {
 module.exports.showProbas = showProbas
 
 const basePrice = 20;
-const specialCollec = "";
+const specialCollec = "PM";
 const onlySecret = ["PM","SAKE"];
 
 const checkGacha = async function (interaction) {
@@ -103,6 +103,12 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 
     let probaF=await db.select("SELECT PROBAF FROM GLOBAL",(res)=>{return res[0].PROBAF})
 
+    let probaPM=500
+    let d=new Date()
+    if((d.getUTCMonth()==11 && d.getUTCDate()>24) || (d.getUTCMonth()==0 && d.getUTCDate()==1)){
+        probaPM=10000
+    }
+
     let chaosStatus = ""
     let chaosRand = Math.floor(Math.random() * 10000)
     if (chaosRand < 100) {
@@ -121,7 +127,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
             if(player.price==600)achToCheck.push("BM600F")
         }
 
-    } else if (chaosRand < 110+probaF+500) {
+    } else if (chaosRand < 110+probaF+probaPM) {
         chaosStatus="allowpm"
     } else if (!forcedRarity) {
         let loyaltyRand = Math.floor(Math.random() * 1000)
@@ -133,7 +139,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
         }
     }
 
-    console.log(`STATUT : ${chaosStatus} - Rand = ${chaosRand}`)
+    console.log(`STATUT : ${chaosStatus} - probaF = ${probaF} - Rand = ${chaosRand}`)
 
     if(chaosStatus!="busted")
         db.update(`UPDATE GLOBAL SET PROBAF=PROBAF+${nbDraw*4}`,()=>{})
@@ -234,14 +240,16 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     let randCollec = Math.floor(Math.random() * collecKeys.length)
                     collecDraw=collecKeys[randCollec]
                 }else{
-                    /*let randPM = Math.floor(Math.random() * 100)
+
+
+                    let randPM = Math.floor(Math.random() * 100)
 
                     //COLLEC SPECIALE
-                    if(randPM<0){
+                    if(randPM<10){
                         collecDraw=specialCollec
                         rarityDraw="✰"
                     }
-                    else{*/
+                    else{
                         let probaupColl = ["", 0]
                         let otherColl = []
                         for (const [co, p] of Object.entries(thisDrawCollec)) {
@@ -261,7 +269,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                             }
                         }while (onlySecret.includes(collecDraw) && rarityDraw!="✰")
 
-                    //}
+                    }
                 }
             }
             if (!forcedRarity) {
