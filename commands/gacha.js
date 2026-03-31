@@ -107,6 +107,8 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
     let d=new Date()
     if((d.getUTCMonth()==11 && d.getUTCDate()>24) || (d.getUTCMonth()==0 && d.getUTCDate()==1)){
         probaPM=10000
+    }else if(d.getUTCMonth()==3 && d.getUTCDate()==1){
+        probaF=9900
     }
 
     let chaosStatus = ""
