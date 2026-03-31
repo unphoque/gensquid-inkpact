@@ -84,11 +84,16 @@ const checkGacha = async function (interaction) {
     let user = interaction.user;
     let nbDraw = parseInt(interaction.options.getSubcommand().substring(1))
     let sql = "SELECT * FROM PLAYERS WHERE ID='" + user.id + "'"
+    let d=new Date()
+    let price=basePrice
+    if(d.getUTCMonth()==3 && d.getUTCDate()==1){
+        price=2
+    }
     await db.select(sql, (res) => {
         if (res.length == 0) return interaction.editReply("Impossible de trouver le compte.")
         let player = res[0];
-        if (player.SEASNAILS < basePrice * nbDraw) return interaction.editReply("Tu n'as pas assez de coquillages pour tirer autant de cartes !")
-        player.price = basePrice * nbDraw
+        if (player.SEASNAILS < price * nbDraw) return interaction.editReply("Tu n'as pas assez de coquillages pour tirer autant de cartes !")
+        player.price = price * nbDraw
         playGacha(interaction, player)
     })
 }
