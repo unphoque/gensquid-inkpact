@@ -263,7 +263,7 @@ client.on('interactionCreate', async interaction => {
     let fish=new Date()
     if(fish.getUTCMonth()==3 && fish.getUTCDate()==1){
 
-        if(fish<cooldown || Math.floor(Math.random()*100)>=5){
+        if(fish<cooldown || Math.floor(Math.random()*100)>=1){
             let fishlist=["Nan.","Pas envie.", "Y a pas école aujourd'hui.","Flemme.","J'ai aquaponey.", "Ma langoustine de soutien émotionnel est décédée.","Plus tard.","Tu veux pas me filer des cartes TOI, pour changer ?", "Le /poinf marche.","Je reviens dans 5 minutes.","Bientôt.","En grève !","J'suis en congé boternité.","Tu voulais les nouvelles F ?","Dommage.", "Donne le double et ptet j'accepte.","Je crois pas, non.","En vrai essaye encore, on sait pas.","Demande encore une fois, t'auras ptet des F. Ou pas.","Je ferai ça quand l'autre aura implémenté les échanges.","Va toucher de l'herbe.","C'est férié pour les bots.","J'suis pas d'accord."]
             let txt=fishlist[Math.floor(Math.random()*fishlist.length)]
             return await interaction.reply(txt)
