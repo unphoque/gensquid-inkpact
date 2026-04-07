@@ -520,6 +520,26 @@ const checkAchievementProgress = async function (user, achId) {
         })
         return (totalcollec < totaltocheck ? [false, `${totalcollec}/${totaltocheck} (${Math.round(totalcollec * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
 
+    }else if (achId.startsWith("COLLEC")) {
+
+        let collec = achId.substring(6)
+        let totalcollec = await db.select(`SELECT COUNT(*) AS COUNT
+                                           FROM INVENTORY,
+                                                CARDS
+                                           WHERE PLAYERID = "${user.id}"
+                                             AND CARDID = CARDS.ID
+                                             AND OBTAINABLE = 1
+                                             AND COLLECTION = "${collec}"`, (res) => {
+            return res[0].COUNT
+        })
+        let totaltocheck = await db.select(`SELECT COUNT(*) AS COUNT
+                                            FROM CARDS
+                                            WHERE COLLECTION = "${collec}"
+                                              AND OBTAINABLE = 1`, (res) => {
+            return res[0].COUNT
+        })
+        return (totalcollec < totaltocheck ? [false, `${totalcollec}/${totaltocheck} (${Math.round(totalcollec * 100 / totaltocheck)}%)`, false] : [true, "**COMPLÉTÉ !**", false])
+
     } else if (achId.startsWith("PERFECT")) {
 
         let collec = achId.substring(7)
