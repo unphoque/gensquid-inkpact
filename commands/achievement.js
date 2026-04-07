@@ -313,7 +313,7 @@ const newAchievementObtained = async function (guild, user, achievement) {
     let achMessage=await channel.send({embeds: [embed]})
     await sleep(800)
     if (achievement.ID == "COLLECFAC"){
-        let reward=await db.select("SELECT * FROM CARDS WHERE COLLECTION='FAC' AND NUMBER='10'", async (res)=>{
+        let reward=await db.select("SELECT co.NAME as COLLECNAME, co.PROBAUP as cpu, * from COLLECTIONS co,CARDS ca where ca.COLLECTION=co.SHORT and ca.COLLECTION='FAC' and ca.NUMBER='10'", async (res)=>{
             let cardinfo=res[0]
             console.log(res)
             return await addCardToInventory(user, cardinfo)
