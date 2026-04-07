@@ -145,6 +145,7 @@ client.on('ready', async () => {
             collections.splice(collections.indexOf("FAKE"),1)
             collections.splice(collections.indexOf("PM"),1)
             collections.splice(collections.indexOf("SAKE"),1)
+            collections.splice(collections.indexOf("FAC"),1)
             collections.splice(collections.indexOf(guarantedCollec),1)
 
             let randCollec=Math.floor(Math.random()*collections.length)
