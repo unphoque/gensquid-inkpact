@@ -308,8 +308,8 @@ const newAchievementObtained = async function (guild, user, achievement) {
     let desc = `**NOUVEL ACHIEVEMENT OBTENU <@${user.id}> !**\n\n${achievement.DESC}\n*Récompense : ${(achievement.REWARD==2000?"Surprise + 2000":achievement.REWARD)} coquillages*\n`;
     (achievement.SECRET == 0 ? embed.setColor(0xC0C0C0) : embed.setColor(0xFFD700))
     embed.setDescription(desc)
-    //let channel=await guild.channels.fetch('1007698058156453889') //TCG SO GACHA
-    let channel = await guild.channels.fetch('502505240759631873') //TEST
+    let channel=await guild.channels.fetch('1007698058156453889') //TCG SO GACHA
+    //let channel = await guild.channels.fetch('502505240759631873') //TEST
     let achMessage=await channel.send({embeds: [embed]})
     await sleep(800)
     if (achievement.ID == "COLLECFAC"){
