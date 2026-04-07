@@ -31,9 +31,10 @@ const data = new SlashCommandBuilder()
 module.exports.data = data;
 
 const db = require("../db.js")
-const {MessageEmbed} = require("discord.js");
+const {MessageEmbed, MessageAttachment} = require("discord.js");
 const collections = require("../collections.json")
-const {sleep} = require("./util");
+const {sleep, toFileString, setEmbedColor} = require("./util");
+const rarity = require("../rarity.json");
 
 const checkBin = function (achValue, myList) {
     let i = achValue.indexOf('1')
@@ -306,10 +307,17 @@ const newAchievementObtained = async function (guild, user, achievement) {
     let desc = `**NOUVEL ACHIEVEMENT OBTENU <@${user.id}> !**\n\n${achievement.DESC}\n*Récompense : ${(achievement.REWARD==2000?"Surprise + 2000":achievement.REWARD)} coquillages*\n`;
     (achievement.SECRET == 0 ? embed.setColor(0xC0C0C0) : embed.setColor(0xFFD700))
     embed.setDescription(desc)
-    let channel=await guild.channels.fetch('1007698058156453889') //TCG SO GACHA
-    //let channel = await guild.channels.fetch('502505240759631873') //TEST
-    channel.send({embeds: [embed]})
+    //let channel=await guild.channels.fetch('1007698058156453889') //TCG SO GACHA
+    let channel = await guild.channels.fetch('502505240759631873') //TEST
+    let achMessage=await channel.send({embeds: [embed]})
     await sleep(800)
+    if (achievement.ID == "FULLFC"){
+        let reward=await db.select("SELECT * FROM CARDS WHERE COLLECTION='FC' AND NUMBER='10'", async (res)=>{
+            let cardinfo=res[0]
+            return await addCardToInventory(user, cardinfo)
+        })
+        achMessage.reply({embeds: [reward[0]], files: [reward[1]]})
+    }
 }
 
 const checkAchievementProgress = async function (user, achId) {
@@ -566,4 +574,40 @@ const checkAchievementProgress = async function (user, achId) {
         })
         return (checkBin(achValue, myList) ? [true, "**COMPLÉTÉ !**", true] : [false, "Non complété", true])
     }
+}
+
+module.exports.checkAchievementProgress = checkAchievementProgress
+
+const addCardToInventory = async function (user, cardinfo) {
+    let sql = "SELECT * FROM INVENTORY WHERE PLAYERID='" + user.id + "' AND CARDID='" + cardinfo.ID + "'"
+    let rarityinfo = rarity[cardinfo.RARITY]
+    let cardname = cardinfo.NAME
+    let cardtitle = cardinfo.TITLE
+    let cardcollec = cardinfo.COLLECTION
+    let cardid = cardinfo.ID
+    let cardnumber = cardinfo.NUMBER
+    let cardmax=(cardinfo.MAX<10?"0"+cardinfo.MAX:cardinfo.MAX)
+
+    let ret = await db.select(sql, async (res) => {
+        if (res.length == 0) {
+            let sql = `INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY) VALUES ('${user.id}','${cardid}', 1)`
+            await db.insert(sql, () => {
+            })
+
+            let file = toFileString(__dirname + "/../img/" + cardcollec + "_" + cardnumber + "_level1.png")
+            let name = toFileString(cardname + ".png")
+            let attachement = new MessageAttachment(file, name)
+            let embed = new MessageEmbed()
+                .setTitle(cardinfo.NAME)
+                .setDescription(`*${cardtitle}*`+
+                    "\n\n**NOUVELLE CARTE !**" +
+                    "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
+                    "\n**" + cardinfo.RARITY + "**" +
+                    (cardinfo.RARITY != "✰" ? "\nNiveau 1 " + (cardinfo.RARITY == "C" ? "(max)" : "0/" + rarityinfo.tonextlv) : ""))
+                .setImage("attachment://" + name)
+            embed=setEmbedColor(cardinfo.RARITY, embed)
+            return [embed, attachement]
+        }
+    })
+    return ret
 }
