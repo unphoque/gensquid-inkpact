@@ -315,6 +315,7 @@ const newAchievementObtained = async function (guild, user, achievement) {
     if (achievement.ID == "COLLECFAC"){
         let reward=await db.select("SELECT * FROM CARDS WHERE COLLECTION='FAC' AND NUMBER='10'", async (res)=>{
             let cardinfo=res[0]
+            console.log(res)
             return await addCardToInventory(user, cardinfo)
         })
         achMessage.reply({embeds: [reward[0]], files: [reward[1]]})
