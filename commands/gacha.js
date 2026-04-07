@@ -187,10 +187,10 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 rarityDraw="F"
                 collecDraw="FAKE"
             } else if (secGuaranted) {
-                secGuaranted = false
-                fs.unlinkSync(__dirname + "/../sec.guaranted")
+                //secGuaranted = false
+                //fs.unlinkSync(__dirname + "/../sec.guaranted")
                 rarityDraw = "✰";
-                collecDraw = "SONV"
+                collecDraw = "FAC"
             } else if (xGuaranted) {
                 xGuaranted = false
                 fs.unlinkSync(__dirname + "/../X.guaranted")
