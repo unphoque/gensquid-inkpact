@@ -209,11 +209,12 @@ let equivalence = {
     "LEVEL": ["LEVELB", "LEVELA", "LEVELS", "LEVELX"]
 }
 
-const collecIgnore=["FAKE","SAKE"]
+const collecIgnore=["FAKE","SAKE","PM","FAC"]
 
 for (const collectionsKey in collections) {
     let short = collections[collectionsKey].choice.name
-    equivalence["COLLEC" + short] = [`FULL${short}`, `PERFECT${short}`]
+    if (!collecIgnore.includes(short))
+        equivalence["COLLEC" + short] = [`FULL${short}`, `PERFECT${short}`]
 }
 
 console.log(equivalence)

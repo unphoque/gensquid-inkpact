@@ -78,7 +78,7 @@ module.exports.showProbas = showProbas
 
 const basePrice = 20;
 const specialCollec = "PM";
-const onlySecret = ["PM","SAKE"];
+const onlySecret = ["PM","SAKE","FAC"];
 
 const checkGacha = async function (interaction) {
     let user = interaction.user;
