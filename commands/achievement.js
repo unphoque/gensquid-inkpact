@@ -311,7 +311,7 @@ const newAchievementObtained = async function (guild, user, achievement) {
     let channel = await guild.channels.fetch('502505240759631873') //TEST
     let achMessage=await channel.send({embeds: [embed]})
     await sleep(800)
-    if (achievement.ID == "FULLFC"){
+    if (achievement.ID == "FULLFAC"){
         let reward=await db.select("SELECT * FROM CARDS WHERE COLLECTION='FC' AND NUMBER='10'", async (res)=>{
             let cardinfo=res[0]
             return await addCardToInventory(user, cardinfo)
