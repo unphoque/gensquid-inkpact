@@ -76,8 +76,8 @@ const proba=require("./commands/proba")
 const blackmarket=require("./commands/blackmarket")
 const achievement=require("./commands/achievement")
 
-const dateMaintenance=Date.UTC(2026,3,1,0,0,0,0)
-const msgMaintenance="I'm cooking."
+const dateMaintenance=Date.UTC(2027,3,1,0,0,0,0)
+const msgMaintenance="Je teste des trucs, désolé !"
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
