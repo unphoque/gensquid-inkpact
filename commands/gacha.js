@@ -197,12 +197,12 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 rarityDraw = "X";
                 player.PITYX = -1;
                 collecDraw = guarantedCollec
-            } else if (player.PITYX >= 69) {
+            } else if (player.PITYX >= 69 && !onlySecret.includes(guarantedCollec)) {
                 rarityDraw = "X";
                 player.PITYX = -1;
                 collecDraw = guarantedCollec
                 achToCheck.push("OBTAINPITYX")
-            } else if (player.PITYS >= 11) {
+            } else if (player.PITYS >= 11 && !onlySecret.includes(guarantedCollec)) {
                 rarityDraw = "S"
                 player.PITYS = -1;
                 collecDraw = guarantedCollec
