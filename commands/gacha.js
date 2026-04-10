@@ -312,7 +312,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                         cardDraw = rarity[rarityDraw].cards[randCard]
                     }
                 }catch(e){
-                    console.log(`collec = ${collecDraw} - rarity = ${rarityDraw}`)
+                    console.log(`forcedRarity = ${forcedRarity&&true} - collec = ${collecDraw} - rarity = ${rarityDraw}`)
                     throw e
                 }
 
