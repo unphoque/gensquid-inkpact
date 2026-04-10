@@ -187,8 +187,8 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 rarityDraw="F"
                 collecDraw="FAKE"
             } else if (secGuaranted) {
-                //secGuaranted = false
-                //fs.unlinkSync(__dirname + "/../sec.guaranted")
+                secGuaranted = false
+                fs.unlinkSync(__dirname + "/../sec.guaranted")
                 rarityDraw = "✰";
                 collecDraw = "FAC"
             } else if (xGuaranted) {
@@ -244,6 +244,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("PM"),1)
                     if(rarityDraw=="✰")collecKeys.splice(collecKeys.indexOf("SO"),1)
                     if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("SAKE"),1)
+                    if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("FAC"),1)
                     let randCollec = Math.floor(Math.random() * collecKeys.length)
                     collecDraw=collecKeys[randCollec]
                 }else{
