@@ -290,6 +290,7 @@ const giveCardNum=async function(interaction){
         if (res.length==1){
             let cardinfo=res[0]
             await addCardToInventory(user,cardinfo,interaction)
+            achievement.checkAchievementsToGive(interaction.guild,user,[`COLLEC${collec}`])
         }else{
             await interaction.editReply("La carte demandée n'existe pas.")
         }
