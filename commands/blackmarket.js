@@ -291,10 +291,12 @@ const buyCard=async function(interaction){
            let cardinfo=res[0]
            await addCardToInventory(user, cardinfo,interaction)
            if(cardinfo.RARITY=="F")await achievement.checkAchievementsToGive(interaction.guild, user,["BMF"])
+           let owner=await interaction.guild.members.fetch(ownerId)
+           await achievement.checkAchievementsToGive(interaction.guild, owner,["BM"])
+           await achievement.checkAchievementsToGive(interaction.guild, user,["BM"])
+           await achievement.checkAchievementsToGive(interaction.guild, user,["COLLEC"+cardinfo.COLLECTION])
        })
-        let owner=await interaction.guild.members.fetch(ownerId)
-        await achievement.checkAchievementsToGive(interaction.guild, owner,["BM"])
-        await achievement.checkAchievementsToGive(interaction.guild, user,["BM"])
+
     });
 }
 
