@@ -78,7 +78,8 @@ module.exports.showProbas = showProbas
 
 const basePrice = 20;
 const specialCollec = "PM";
-const onlySecret = ["PM","SAKE","FAC"];
+const onlySecret = ["PM","SAKE","FAC", "DM"];
+const variantTypes={"":"","ALT":"alternative"}
 
 const checkGacha = async function (interaction) {
     let user = interaction.user;
@@ -111,7 +112,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
     let probaPM=500
     let d=new Date()
     if((d.getUTCMonth()==11 && d.getUTCDate()>24) || (d.getUTCMonth()==0 && d.getUTCDate()==1)){
-        probaPM=10000
+        probaPM=1000
     }else if(d.getUTCMonth()==3 && d.getUTCDate()==1){
         probaF=9900
     }
@@ -190,7 +191,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 secGuaranted = false
                 fs.unlinkSync(__dirname + "/../sec.guaranted")
                 rarityDraw = "✰";
-                collecDraw = "FAC"
+                collecDraw = "DM"
             } else if (xGuaranted) {
                 xGuaranted = false
                 fs.unlinkSync(__dirname + "/../X.guaranted")
@@ -245,6 +246,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     if(rarityDraw=="✰")collecKeys.splice(collecKeys.indexOf("SO"),1)
                     if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("SAKE"),1)
                     if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("FAC"),1)
+                    if(rarityDraw!="✰")collecKeys.splice(collecKeys.indexOf("DM"),1)
                     let randCollec = Math.floor(Math.random() * collecKeys.length)
                     collecDraw=collecKeys[randCollec]
                 }else{
@@ -255,6 +257,10 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                     //COLLEC SPECIALE
                     if("PM" in thisDrawCollec && randPM<10){
                         collecDraw=specialCollec
+                        rarityDraw="✰"
+                    }
+                    else if(randPM<90 && (d.getUTCMonth()==9 && d.getUTCDate()==31 || d.getUTCMonth()==9 && d.getUTCDate()==30 && d.getUTCHours()>=23) || (d.getUTCMonth()==10 && d.getUTCDate()==1)){
+                        collecDraw="DM"
                         rarityDraw="✰"
                     }
                     else{
@@ -319,7 +325,14 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
                 }
 
             }
-            allCards.push(cardDraw)
+
+            let randVariant=Math.floor(Math.random()*10000)
+            let varianttype=""
+            if(randVariant<600){
+                varianttype="ALT"
+            }
+
+            allCards.push([cardDraw, varianttype])
         }
         await saveAndShowGacha(interaction, player, allCards, cards, chaosStatus)
         achToCheck=achToCheck.concat(["CARDS","MULTIPLE","LEVEL","RARITY","SEASNAILS"])
@@ -345,8 +358,9 @@ const saveAndShowGacha = async function (interaction, player, allCards, cards, c
         let embeds = []
         let attachments = []
         for (let i = 0; i < allCards.length; i++) {
-            let cardDraw = allCards[i]
-            let [embed, attachment] = await addCardToInventory(user, cards[cardDraw], chaosStatus)
+            let cardDraw = allCards[i][0]
+            let cardVariantType = allCards[i][1]
+            let [embed, attachment] = await addCardToInventory(user, cards[cardDraw], chaosStatus, cardVariantType)
             embeds.push(embed)
             attachments.push(attachment)
         }
@@ -359,100 +373,108 @@ const saveAndShowGacha = async function (interaction, player, allCards, cards, c
     });
 }
 
-const addCardToInventory = async function (user, cardinfo, chaosStatus) {
-    let sql = "SELECT * FROM INVENTORY WHERE PLAYERID='" + user.id + "' AND CARDID='" + cardinfo.ID + "'"
+const addCardToInventory = async function (user, cardinfo, chaosStatus, cardVariantType) {
+    let sql = `SELECT * FROM INVENTORY WHERE PLAYERID='${user.id}' AND CARDID='${cardinfo.ID}'`
     let rarityinfo = rarity[cardinfo.RARITY]
     let cardname = cardinfo.NAME
     let cardtitle = cardinfo.TITLE
     let cardcollec = cardinfo.COLLECTION
     let cardid = cardinfo.ID
     let cardnumber = cardinfo.NUMBER
+    let cardvariant = cardVariantType
+    if(!fs.existsSync(toFileString(`${__dirname}/../img/${cardvariant+"/"}${cardcollec}_${cardnumber}_level1.png`))){
+        cardvariant=""
+    }
+    if(cardvariant!="") cardname=cardinfo[cardvariant]
     let compensation=rarityinfo.compensation
     let cardmax=(cardinfo.MAX<10?"0"+cardinfo.MAX:cardinfo.MAX)
+
+
 
     if(onlySecret.includes(cardcollec) || cardcollec==specialCollec)compensation=10
 
     let ret = await db.select(sql, async (res) => {
         if (res.length == 0) {
-            let sql = `INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY) VALUES ('${user.id}','${cardinfo.ID}', 1)`
+            let sql = `INSERT INTO INVENTORY (PLAYERID, CARDID, QUANTITY ${(cardvariant!=""?", "+cardvariant:"")} ) VALUES ('${user.id}','${cardinfo.ID}', 1 ${(cardvariant!=""?"1":"")})`
             await db.insert(sql, () => {
             })
 
-            let file = toFileString(__dirname + "/../img/" + cardcollec + "_" + cardnumber + "_level1.png")
+            let file = toFileString(`${__dirname}/../img/${(cardvariant!=""?cardvariant+"/":"")}${cardcollec}_${cardnumber}_level1.png`)
             let name = toFileString(cardname + ".png")
             let attachement = new MessageAttachment(file, name)
             let embed = new MessageEmbed()
-                .setTitle(cardinfo.NAME)
+                .setTitle(cardname)
                 .setDescription(`*${cardtitle}*`+
                     "\n\n**NOUVELLE CARTE !**" +
                     "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                     "\n**" + cardinfo.RARITY + "**" +
-                    (cardinfo.RARITY != "✰" ? "\nNiveau 1 " + (cardinfo.RARITY == "C" ? "(max)" : "0/" + rarityinfo.tonextlv) : ""))
+                    (cardinfo.RARITY != "✰" ? "\nNiveau 1 " + (cardinfo.RARITY == "C" ? "(max)" : "0/" + rarityinfo.tonextlv) : "") +
+                    (cardvariant != "" ? ("\n\nVariante " + variantTypes[cardvariant]) + " !" :""))
                 .setImage("attachment://" + name)
             embed=setEmbedColor(cardinfo.RARITY, embed)
             return [embed, attachement]
         } else {
             if (res[0].CARDLEVEL == rarityinfo.maxlv) {
                 if (chaosStatus != "busted") {
-                    let sql = "UPDATE PLAYERS SET SEASNAILS=SEASNAILS+" + compensation + " WHERE ID='" + user.id + "'";
+                    let sql = `UPDATE PLAYERS SET SEASNAILS=SEASNAILS+${compensation} WHERE ID='${user.id}'`;
                     await db.update(sql, () => {
                     })
                 }
                 sql = `UPDATE INVENTORY
-                       SET QUANTITY=QUANTITY + 1
+                       SET QUANTITY=QUANTITY + 1 ${(cardvariant!=""?", "+cardvariant+"=1":"")}
                        WHERE CARDID = ${cardinfo.ID}
                          and PLAYERID = "${user.id}"`
                 await db.update(sql, () => {
                 })
-                let cardname = cardinfo.NAME
-                let file = toFileString(__dirname + "/../img/" + cardcollec + "_" + cardnumber + "_level" + res[0].CARDLEVEL + ".png")
+                let file = toFileString(`${__dirname}/../img/${(cardvariant!=""?cardvariant+"/":"")}${cardcollec}_${cardnumber}_level${res[0].CARDLEVEL}.png`)
                 let name = toFileString(cardname + ".png")
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
-                    .setTitle(cardinfo.NAME)
+                    .setTitle(cardname)
                     .setDescription(`*${cardtitle}*`+
                         "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                         "\n**" + cardinfo.RARITY + "**" +
                         (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " (max)" : "") +
-                        (chaosStatus == "busted" ? "" : "\n*Compensation : " + compensation + " coquillage" + (rarityinfo.compensation == 1 ? "*" : "s*")))
+                        (chaosStatus == "busted" ? "" : "\n*Compensation : " + compensation + " coquillage" + (rarityinfo.compensation == 1 ? "*" : "s*"))+
+                        (cardvariant != "" ? ("\n\nVariante " + variantTypes[cardvariant]) + " !":""))
                     .setImage("attachment://" + name)
                 embed=setEmbedColor(cardinfo.RARITY, embed)
                 return [embed, attachement]
             } else if ((res[0].NBPOSSESSED + 1) == rarityinfo.tonextlv) {
                 let newlv = res[0].CARDLEVEL + 1
-                let sql = "UPDATE INVENTORY SET CARDLEVEL=" + newlv + ", NBPOSSESSED=0, QUANTITY=QUANTITY+1 WHERE PLAYERID='" + user.id + "' AND CARDID='" + cardid + "'"
+                let sql = `UPDATE INVENTORY SET CARDLEVEL=${newlv}, NBPOSSESSED=0, QUANTITY=QUANTITY+1 ${(cardvariant!=""?", "+cardvariant+"=1":"")} WHERE PLAYERID='${user.id}' AND CARDID='${cardid}'`
                 await db.update(sql, () => {
                 })
 
-                let cardname = cardinfo.NAME
-                let file = toFileString(__dirname + "/../img/" + cardcollec + "_" + cardnumber + "_level" + newlv + ".png")
+                let file = toFileString(`${__dirname}/../img/${(cardvariant!=""?cardvariant+"/":"")}${cardcollec}_${cardnumber}_level${newlv}.png`)
                 let name = toFileString(cardname + ".png")
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
-                    .setTitle(cardinfo.NAME)
+                    .setTitle(cardname)
                     .setDescription(`*${cardtitle}*`+
                         "\n\n**NIVEAU SUP !**" +
                         "\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                         "\n**" + cardinfo.RARITY + "**" +
-                        (cardinfo.RARITY != "✰" ? "\nNiveau " + newlv + (newlv == rarityinfo.maxlv ? " (max)" : " 0/" + rarityinfo.tonextlv) : ""))
+                        (cardinfo.RARITY != "✰" ? "\nNiveau " + newlv + (newlv == rarityinfo.maxlv ? " (max)" : " 0/" + rarityinfo.tonextlv) : "")+
+                        (cardvariant != "" ? ("\n\nVariante" + variantTypes[cardvariant])+ " !":""))
                     .setImage("attachment://" + name)
                 embed=setEmbedColor(cardinfo.RARITY, embed)
                 return [embed, attachement]
             } else {
-                let sql = "UPDATE INVENTORY SET NBPOSSESSED=NBPOSSESSED+1, QUANTITY=QUANTITY+1 WHERE PLAYERID='" + user.id + "' AND CARDID='" + cardinfo.ID + "'"
+                let sql = `UPDATE INVENTORY SET NBPOSSESSED=NBPOSSESSED+1, QUANTITY=QUANTITY+1 ${(cardvariant!=""?", "+cardvariant+"=1":"")} WHERE PLAYERID='${user.id}' AND CARDID='${cardinfo.ID}'`
                 await db.update(sql, () => {
                 })
 
-                let cardname = cardinfo.NAME
-                let file = toFileString(__dirname + "/../img/" + cardcollec + "_" + cardnumber + "_level" + res[0].CARDLEVEL + ".png")
+                let file = toFileString(`${__dirname}/../img/${(cardvariant!=""?cardvariant+"/":"")}${cardcollec}_${cardnumber}_level${res[0].CARDLEVEL}.png`)
                 let name = toFileString(cardname + ".png")
                 let attachement = new MessageAttachment(file, name)
                 let embed = new MessageEmbed()
-                    .setTitle(cardinfo.NAME)
+                    .setTitle(cardname)
                     .setDescription(`*${cardtitle}*`+
                         "\n\n__**" + cardinfo.COLLECNAME + "**__ - n° " + cardnumber + "/" + cardmax +
                         "\n**" + cardinfo.RARITY + "**" +
-                        (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " " + (res[0].NBPOSSESSED + 1) + "/" + rarityinfo.tonextlv : ""))
+                        (cardinfo.RARITY != "✰" ? "\nNiveau " + res[0].CARDLEVEL + " " + (res[0].NBPOSSESSED + 1) + "/" + rarityinfo.tonextlv : "")+
+                        (cardvariant != "" ? ("\n\nVariante" + variantTypes[cardvariant])+ " !":""))
                     .setImage("attachment://" + name)
                 embed=setEmbedColor(cardinfo.RARITY, embed)
                 return [embed, attachement]

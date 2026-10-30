@@ -76,8 +76,8 @@ const proba=require("./commands/proba")
 const blackmarket=require("./commands/blackmarket")
 const achievement=require("./commands/achievement")
 
-const dateMaintenance=Date.UTC(2026,3,11,4,0,0,0)
-const msgMaintenance="Je ne le dirais pas. Vous savez très bien."
+const dateMaintenance=Date.UTC(2026,8,31,4,0,0,0)
+const msgMaintenance="émoji citrouille !"
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
