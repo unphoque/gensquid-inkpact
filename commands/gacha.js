@@ -328,7 +328,7 @@ const playGacha = async function (interaction, player, forcedRarity = "") {
 
             let randVariant=Math.floor(Math.random()*10000)
             let varianttype=""
-            if(randVariant<600){
+            if(randVariant<1300){
                 varianttype="ALT"
             }
 
